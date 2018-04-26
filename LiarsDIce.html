@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LiarsDice</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style> </style>
+</head>
+<body>
+<div class="container-fluid bg-light border border-primary justify-content-center mx-auto">
+    <div class="mx-auto row justify-content-center"><button class="btn btn-primary">Start Game</button></div>
+    <div id="currentPlayer" class="row justify-content-center"></div>
+    <div id="currentHand" class="row justify-content-center"></div>
+    <div id="playerOptions" class="row container-fluid justify-content-center" style="display: none">
+    </div><div id="declareDisplay" class=" row" >Select Your Declared Hand</div>
+    <div id="faceDisplay" class="row"></div>
+    <div id="inputs" class="row"><input type="text" placeholder="Face" id = "face"><input type="text" placeholder="Count" id="count"></div>
+    <div id="result" class="row"></div>
+
+    <div id = "options" class="btn-group-vertical row justify-content-center" role="group" aria-label="Basic example">
+        <button id="bluff" type="button" class="btn btn-danger btn-block">CALL BLUFF</button>
+        <button id="declare" type="button" class="btn btn-info btn-block">Declare Hand</button>
+        <button id="spotOn" type="button" class="btn btn-warning btn-block">SPOT ON</button>
+        <button id="pass" type="button" class="btn btn-success btn-block">PASS</button>
+        <button id="nextRound" type="button" class="btn btn-primary btn-block">NEXT ROUND</button>
+        <button id="nextPlayer" type="button" class="btn btn-success btn-block">Next Player</button>
+    </div>
+    <div id = 'test'></div>
+    <div id = 'test2'></div>
+</div>
+<div>
+    <div>
+        <h2> Game Instructions</h2>
+        <ul>
+            <li> You are the first player.</li>
+            <li> Your hand is displayed below your player name.</li>
+            <li> You are betting on the number of dice on the table.</li>
+            <li> After the initial bet, each player must either raise the bet count, or, keep the count, but raise the face.</li>
+            <li> You may call bluff on other players, and they may do so to you.</li>
+            <li> You may also call spot on if you think they are exactly correct.</li>
+            <li> If you don't think the opposing player is bluffing or spot on, you can pass and have the next player play.</li>
+        </ul>
+    </div>
+    <h3><a href="main.html"> Back To My Site</a></h3>
+</div>
+
+<script src="../js/liarsdice.js"></script>
+</body>
+</html>
