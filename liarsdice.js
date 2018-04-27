@@ -29,8 +29,8 @@ const main = () => {
         game();
     });
     bluffButton.addEventListener('click', () => {
-        console.log(`Bluff initial currentPNum: ${PlayerNumber}`);
-        challenger = table[0];
+        console.log(`Bluff initial currentPNum: ${table.currentPlayerIndex}`);
+        table.challenger = table.players[0];
         displayChallengeStatus(true);
         console.log(`Bluff called on `);
         determineChallengeResult(true);
@@ -49,7 +49,7 @@ const main = () => {
         displayRound();
         startNextRound();
         firstPlayer();
-        console.log(`nextRoundListener exited-> currentPnum: ${PlayerNumber}`);
+        console.log(`nextRoundListener exited-> currentPnum: ${table.currentPlayerIndex}`);
 
     });
     declareButton.addEventListener('click', () => {
@@ -61,7 +61,7 @@ const main = () => {
     passButton.addEventListener('click', ()=>{
         hideElements([passButton, bluffButton, spotOnButton]);
         displayElements([nextPlayerButton]);
-        lastBet = playerPlayAI();
+        table.lastBet = playerPlayAI();
     });
 //TESTING AREA
     spotOnButton.addEventListener('click', () => {
@@ -73,8 +73,8 @@ const main = () => {
     });
     const checkSpotOn = () =>{
         let checkArr = playerPlayAI();
-        console.log(`checking if spotOn -> occuranceArray: ${diceOnTableIndexedArray}`);
-        return !(diceOnTableIndexedArray[checkArr[0] -1] === checkArr[1])
+        console.log(`checking if spotOn -> occuranceArray: ${table.currentDiceIndexedArray}`);
+        return !(table.currentDiceIndexedArray[checkArr[0] -1] === checkArr[1])
     };
 
 // ###############OBJECTS AT TABLE##############
@@ -88,30 +88,33 @@ const main = () => {
             }
             console.log(`${this.name} has rolled`);
         };
-        this.addToTable = (table) => {
-            table.push(this);
+        this.addToTable = () => {
+            table.players.push(this);
         };
         this.addOccurrences = () =>{
             for (let i = 0; i < this.hand.length; i++) {
-                diceOnTableIndexedArray[this.hand[i] - 1] += 1;
+                table.currentDiceIndexedArray[this.hand[i] - 1] += 1;
             }
-            numberOfDie += this.hand.length;
+            table.numberActiveDice += this.hand.length;
             console.log(`${this.name} has added die to occurences`);
         };
     };
+
     //Main Variables
-    let table = [];
-    let PlayerNumber;
-    let currentHand;
-    let currentPlayer;
-    let lastBet = [0, 0];
-    let betMade = false;
-    let betFaceOccurrence = 0;
-    let diceOnTableIndexedArray = [0,0,0,0,0,0];
-    let numberOfDie = 0;
-    let betIsTrue = false;
-    let challenger;
-    let challenged;
+    let table = {
+    players: [],
+    currentPlayerIndex: 0,
+    currentPlayersHand: [0,0,0,0,0],
+    currentPlayerObject: 0,
+    lastBet: [0, 0],
+    betMade: false,
+    numberOfDeclaredFaces: 0,
+    currentDiceIndexedArray : [0,0,0,0,0,0],
+    numberActiveDice: 0,
+    betIsTrue: false,
+    challenger: null,
+    challenged: null
+    };
 
 //#############Game Functions###################
     const startGame = () => {
@@ -119,11 +122,11 @@ const main = () => {
         let bob = new Player("Bob");
         let sam = new Player("Sam");
         let jim = new Player("Jim");
-        bob.addToTable(table);
-        sam.addToTable(table);
-        jim.addToTable(table);
-        if (table[0] !== undefined) {
-            table[0].player = true;
+        bob.addToTable();
+        sam.addToTable();
+        jim.addToTable();
+        if (table.players[0] !== undefined) {
+            table.players[0].player = true;
             console.log("Players have been sat");
         } else {
             console.log("There are no players at the table");
@@ -143,57 +146,57 @@ const main = () => {
     };
 //Player set up
     const setUpNextPlayer = () => {
-        currentPlayer = table[PlayerNumber];
-        currentHand = currentPlayer.hand;
+        table.currentPlayerObject = table.players[table.currentPlayerIndex];
+        table.currentPlayersHand = table.currentPlayerObject.hand;
         displayElements([currentPlayerDisplay, currentHandDisplay]);
-        if (currentPlayer.player === true) {
-            currentHandDisplay.innerHTML = `<h1 class="text-align">${currentHand}</h1>`;
-            currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
+        if (table.currentPlayerObject.player === true) {
+            currentHandDisplay.innerHTML = `<h1 class="text-align">${table.currentPlayersHand}</h1>`;
+            currentPlayerDisplay.innerHTML = `<h1 class="text-align">${table.currentPlayerObject.name}</h1>`;
             displayElements([declareDisplay, declareButton, inputs]);
             hideElements([spotOnButton, bluffButton]);
 
         } else {
             displayElements([spotOnButton, bluffButton, passButton, result]);
             result.innerHTML = "";
-            currentPlayerDisplay.innerHTML = `<h1 class="text-align>${currentPlayer.name}</h1>`;
-            currentHandDisplay.innerHTML = `${currentPlayer.name} is playing`;
+            currentPlayerDisplay.innerHTML = `<h1 class="text-align>${table.currentPlayerObject.name}</h1>`;
+            currentHandDisplay.innerHTML = `${table.currentPlayerObject.name} is playing`;
             playerPlayAI();
         }
     };
     const firstPlayer = () => {
-        console.log(`firstPlayer Function Initialized-> CurrentPNum: ${PlayerNumber}`);
+        console.log(`firstPlayer Function Initialized-> CurrentPNum: ${table.currentPlayerIndex}`);
         setUpNextPlayer();
-        PlayerNumber += 1;
+        table.currentPlayerIndex += 1;
         returnNewPlayerNumber();
-        console.log(`firstPlayer function Exited-> CurrentPNum: ${PlayerNumber}`);
+        console.log(`firstPlayer function Exited-> CurrentPNum: ${table.currentPlayerIndex}`);
     };
     const readyNextPlayer = () => {
-        console.log(`nextPlayer function initial-> currentPNum: ${PlayerNumber}`);
+        console.log(`nextPlayer function initial-> currentPNum: ${table.currentPlayerIndex}`);
         setUpNextPlayer();
-        PlayerNumber += 1;
-        console.log(`NextPlayer Function Exited -> currentPNum: ${PlayerNumber}`);
+        table.currentPlayerIndex += 1;
+        console.log(`NextPlayer Function Exited -> currentPNum: ${table.currentPlayerIndex}`);
     };
-    const returnNewPlayerNumber = () => {
-        if (PlayerNumber === table.length || PlayerNumber === undefined) {
-            console.log(`Zeroing function Initial-> currentPNum: ${PlayerNumber}`);
-            PlayerNumber = 0;
+    const returnNewPlayerNumber =  () => {
+        if (table.currentPlayerIndex === table.players.length || table.currentPlayerIndex === undefined) {
+            console.log(`Zeroing function Initial-> currentPNum: ${table.currentPlayerIndex}`);
+            table.currentPlayerIndex = 0;
             console.log("Zerod Exit");
-        } else if (PlayerNumber < 0) {
-            PlayerNumber = table.length - 1;
-            console.log(`Zero Exit End Table -> currentPNum: ${PlayerNumber}`);
+        } else if (table.currentPlayerIndex < 0) {
+            table.currentPlayerIndex = table.players.length - 1;
+            console.log(`Zero Exit End Table -> currentPNum: ${table.currentPlayerIndex}`);
         } else {
-            console.log(`Zero Exit -> currentPNum: ${PlayerNumber}`)
+            console.log(`Zero Exit -> currentPNum: ${table.currentPlayerIndex}`)
         }
     };
 //NEW ROUND
     const startNextRound = () => {
-        for (let x = 0; x < table.length; x++) {
-            table[x].roll();
-            table[x].addOccurrences();
+        for (let x = 0; x < table.players.length; x++) {
+            table.players[x].roll();
+            table.players[x].addOccurrences();
         }
-        test2.innerHTML = `Your hand is: ${table[0].hand}. You have ${table[0].hand.length} dice left.`;
+        test2.innerHTML = `Your hand is: ${table.players[0].hand}. You have ${table.players[0].hand.length} dice left.`;
         returnNewPlayerNumber();
-        currentPlayer = table[PlayerNumber];
+        table.currentPlayerObject = table.players[table.currentPlayerIndex];
         console.log(`startNextRound function exited`);
 
     };
@@ -201,12 +204,12 @@ const main = () => {
         console.log("endRound Function initial");
         resetRoundVariables();
         test.innerHTML = "ROUND OVER";
-        PlayerNumber -= 1;
-        console.log(`endRound function exited -> currentPNum: ${PlayerNumber}`);
+        table.currentPlayerIndex -= 1;
+        console.log(`endRound function exited -> currentPNum: ${table.currentPlayerIndex}`);
     };
     const resetRoundVariables = () => {
-        lastBet = [0,0];
-        betIsTrue = false;
+        table.lastBet = [0,0];
+        table.betIsTrue = false;
         hideElements([passButton, bluffButton, spotOnButton, nextPlayerButton]);
         console.log(`Round Cleared`);
     };
@@ -218,34 +221,34 @@ const main = () => {
     //Player Bets
     const testFunction = () =>{
         console.log("##########TEST FUNCTION##########");
-        for (let i =0; i < table.length; i++){
-            console.log(table[i].hand );
+        for (let i =0; i < table.players.length; i++){
+            console.log(table.players[i].hand );
         }
-        console.log(diceOnTableIndexedArray);
+        console.log(table.currentDiceIndexedArray);
     };
     const checkIfBetValid = (face, count) => {
-        let lastFace = lastBet[0];
-        let lastCount = lastBet[1];
+        let lastFace = table.lastBet[0];
+        let lastCount = table.lastBet[1];
         if ((face > lastFace && count === lastCount) || count > lastCount) {
-            betMade = true;
-            betFaceOccurrence = count;
+            table.betMade = true;
+            table.numberOfDeclaredFaces = count;
             return [face, count];
         }
         return false;
     };
 
     const checkBetTruth = () => {
-        console.log(`checking bet -> lastBet: ${lastBet} `);
-        let face = lastBet[0];
-        let count = lastBet[1];
-        console.log(diceOnTableIndexedArray);
-        betIsTrue = (diceOnTableIndexedArray[face - 1] >= count);
-        return (betIsTrue);
+        console.log(`checking bet -> lastBet: ${table.lastBet} `);
+        let face = table.lastBet[0];
+        let count = table.lastBet[1];
+        console.log(table.currentDiceIndexedArray);
+        table.betIsTrue = (table.currentDiceIndexedArray[face - 1] >= count);
+        return (table.betIsTrue);
     };
     const processBetValidity = (face, count) => {
         if (checkIfBetValid(face, count) !== false) {
-            lastBet = checkIfBetValid(face, count);
-            test2.innerHTML = `${lastBet}`;
+            table.lastBet = checkIfBetValid(face, count);
+            test2.innerHTML = `${table.lastBet}`;
         } else {
             test2.innerHTML = "Not Valid Input";
         }
@@ -261,7 +264,7 @@ const main = () => {
         }
     };
     const returnDieOnTableRatio = () => {
-        return (numberOfDie - betFaceOccurrence)/numberOfDie;
+        return (table.numberActiveDice - table.numberOfDeclaredFaces)/table.numberActiveDice;
     };
     const returnTrueIfAIChallenges = () => {
         let dif = returnDieOnTableRatio();
@@ -280,16 +283,16 @@ const main = () => {
     const displayChallengeStatus = (challenge) =>{
         console.log("Reporting Challenge");
         if (challenge){
-            challenged = currentPlayer;
-            if (challenged.player === true){
-                let aiTable = table.slice(1);
+            table.challenged = table.currentPlayerObject;
+            if (table.challenged.player === true){
+                let aiTable = table.players.slice(1);
                 console.log(`AI table ${aiTable}`);
-                challenger = aiTable[Math.floor(Math.random() * aiTable.length)];
-                console.log(`challenger is ${challenger.name}`);
-                console.log(`challenged is ${challenged.name}`);
+                table.challenger = aiTable[Math.floor(Math.random() * aiTable.length)];
+                console.log(`challenger is ${table.challenger.name}`);
+                console.log(`challenged is ${table.challenged.name}`);
             }
             reportBet();
-            faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`;
+            faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${table.challenger.name}</div>`;
             return true;
         }else{
             faceDisplay.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
@@ -303,16 +306,16 @@ const main = () => {
             displayElements([nextRoundButton, result]);
             hideElements([nextPlayerButton]);
             if (checkBetTruth()){
-                result.innerHTML = `<div class = "text-success display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`
-                removeDie(challenger);
-                if (returnIfLastDie(challenger)){
-                    handleLastDieLost(challenger);
+                result.innerHTML = `<div class = "text-success display-4"> Challenge Failed -> ${table.challenger.name} loses a die </div>`;
+                removeDie(table.challenger);
+                if (returnIfLastDie(table.challenger)){
+                    handleLastDieLost(table.challenger);
                 }
             }else{
-                result.innerHTML = `<div class = "text-danger display-5"> Challenge Succeeded -> ${challenged.name} loses a die </div>`
-                removeDie(challenged);
-                if (returnIfLastDie(challenged)){
-                    handleLastDieLost(challenged);
+                result.innerHTML = `<div class = "text-danger display-5"> Challenge Succeeded -> ${table.challenged.name} loses a die </div>`;
+                removeDie(table.challenged);
+                if (returnIfLastDie(table.challenged)){
+                    handleLastDieLost(table.challenged);
                 }
             }
         }else {
@@ -327,15 +330,15 @@ const main = () => {
     const playerPlayAI = ()=> {
         console.log("Player is Playing");
         let pBT = playerBet();
-        faceDisplay.innerHTML = `${currentPlayer.name} bets ${pBT}`;
+        faceDisplay.innerHTML = `${table.currentPlayerObject.name} bets ${pBT}`;
         return pBT;
     };
 
     const countFaces = () =>{
-        console.log(`counting faces -> current Hand: ${currentHand}`);
+        console.log(`counting faces -> current Hand: ${table.currentPlayersHand}`);
         let currentHandInts = [0, 0, 0, 0, 0, 0];
-        for (let i = 0; i < currentHand.length; i++) {
-            currentHandInts[currentHand[i] - 1] += 1;
+        for (let i = 0; i < table.currentPlayersHand.length; i++) {
+            currentHandInts[table.currentPlayersHand[i] - 1] += 1;
         }
         return currentHandInts;
     };
@@ -367,7 +370,7 @@ const main = () => {
 
     const aiCheckCurrentHandValidity = hand => {
         console.log(`checking if hand is bigger -> bestHand: ${hand}`);
-        return ((hand[0] > lastBet[0]  && hand[1] >= lastBet[1]) || hand[1] > lastBet[1])
+        return ((hand[0] > table.lastBet[0]  && hand[1] >= table.lastBet[1]) || hand[1] > table.lastBet[1])
     };
 
     const returnIfLastDie = player => {
@@ -375,9 +378,8 @@ const main = () => {
     };
 
     const handleLastDieLost = player =>{
-        let index = table.indexOf(player);
-        table = table.splice(index, 1);
-
+        let index = table.players.indexOf(player);
+        table.players = table.players.splice(index, 1);
     };
 
 //Game Start Functions
