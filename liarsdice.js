@@ -2,7 +2,7 @@ const main = () => {
 //###########Document buttons and displays##############
 //displays
     let currentHandDisplay = document.querySelector("#currentHand");
-    let currentPlayerDisplay = document.querySelector("#currentPlayer");
+    let playerDisplay = document.querySelector("#currentPlayer");
     let playerOptionsDisplay = document.querySelector("#playerOptions");
     let test = document.querySelector("#test");
     let test2 = document.querySelector("#test2");
@@ -28,7 +28,33 @@ const main = () => {
         hideElements([startButton]);
         game();
     });
+
+    declareButton.addEventListener('click', () => {
+        //What it should do:
+        //RETURN Check Player input
+        // RETURN if valid
+        // IF NOTPrompt for renntry
+        //ELSE{ see if ai wants to challenge
+        //IF YES{ RETURN result of challenge
+        //DISPLAY result
+        //DISPLAY next round button only}
+        //IF NO challenge, set bet as last bet
+        //DISPLAY next player button
+        processBetValidity(faceInput.value, countInput.value);
+        hideElements([declareDisplay, declareButton, inputs]);
+        displayElements([result, faceDisplay]);
+        determineChallengeResult(displayChallengeStatus(returnTrueIfAIChallenges()));
+    });
+
+
     bluffButton.addEventListener('click', () => {
+        //What it should do:
+        //RETURN challenger
+        //RETURN challenged
+        //DISPLAY "challenge Happened"
+        //RETURN winner
+        //DISPLAY winner
+        //START NEXT ROUND
         console.log(`Bluff initial currentPNum: ${table.currentPlayerIndex}`);
         table.challenger = table.players[0];
         displayChallengeStatus(true);
@@ -52,12 +78,7 @@ const main = () => {
         console.log(`nextRoundListener exited-> currentPnum: ${table.currentPlayerIndex}`);
 
     });
-    declareButton.addEventListener('click', () => {
-        processBetValidity(faceInput.value, countInput.value);
-        hideElements([declareDisplay, declareButton, inputs]);
-        displayElements([result, faceDisplay]);
-        determineChallengeResult(displayChallengeStatus(returnTrueIfAIChallenges()));
-    });
+
     passButton.addEventListener('click', ()=>{
         hideElements([passButton, bluffButton, spotOnButton]);
         displayElements([nextPlayerButton]);
@@ -67,14 +88,18 @@ const main = () => {
     spotOnButton.addEventListener('click', () => {
         console.log('SpotOn called');
         displayChallengeStatus(true);
+        table.challenged = table.currentPlayerObject;
+        table.challenger = table.players[0];
         displayElements([nextRoundButton]);
-        determineChallengeResult(true);
+        if(checkSpotOn()){
+           result.innerHTML=  `<div class = "text-danger display-5"> Challenge Succeeded -> ${table.challenged.name} loses a die </div>`;
+        }
         endRound();
     });
     const checkSpotOn = () =>{
-        let checkArr = playerPlayAI();
+        let checkArr = table.currentBet;
         console.log(`checking if spotOn -> occuranceArray: ${table.currentDiceIndexedArray}`);
-        return !(table.currentDiceIndexedArray[checkArr[0] -1] === checkArr[1])
+        return (table.currentDiceIndexedArray[checkArr[0] -1] === checkArr[1]);
     };
 
 // ###############OBJECTS AT TABLE##############
@@ -102,18 +127,19 @@ const main = () => {
 
     //Main Variables
     let table = {
-    players: [],
-    currentPlayerIndex: 0,
-    currentPlayersHand: [0,0,0,0,0],
-    currentPlayerObject: 0,
-    lastBet: [0, 0],
-    betMade: false,
-    numberOfDeclaredFaces: 0,
-    currentDiceIndexedArray : [0,0,0,0,0,0],
-    numberActiveDice: 0,
-    betIsTrue: false,
-    challenger: null,
-    challenged: null
+        players: [],
+        currentPlayerIndex: 0,
+        currentPlayersHand: [0,0,0,0,0],
+        currentPlayerObject: 0,
+        lastBet: [0, 0],
+        betMade: false,
+        currentBet: [0,0],
+        numberOfDeclaredFaces: 0,
+        currentDiceIndexedArray : [0,0,0,0,0,0],
+        numberActiveDice: 0,
+        betIsTrue: false,
+        challenger: null,
+        challenged: null
     };
 
 //#############Game Functions###################
@@ -148,17 +174,17 @@ const main = () => {
     const setUpNextPlayer = () => {
         table.currentPlayerObject = table.players[table.currentPlayerIndex];
         table.currentPlayersHand = table.currentPlayerObject.hand;
-        displayElements([currentPlayerDisplay, currentHandDisplay]);
+        displayElements([playerDisplay, currentHandDisplay]);
         if (table.currentPlayerObject.player === true) {
             currentHandDisplay.innerHTML = `<h1 class="text-align">${table.currentPlayersHand}</h1>`;
-            currentPlayerDisplay.innerHTML = `<h1 class="text-align">${table.currentPlayerObject.name}</h1>`;
+            playerDisplay.innerHTML = `<h1 class="text-align">${table.currentPlayerObject.name}</h1>`;
             displayElements([declareDisplay, declareButton, inputs]);
             hideElements([spotOnButton, bluffButton]);
 
         } else {
             displayElements([spotOnButton, bluffButton, passButton, result]);
             result.innerHTML = "";
-            currentPlayerDisplay.innerHTML = `<h1 class="text-align>${table.currentPlayerObject.name}</h1>`;
+            playerDisplay.innerHTML = `<h1 class="text-align>${table.currentPlayerObject.name}</h1>`;
             currentHandDisplay.innerHTML = `${table.currentPlayerObject.name} is playing`;
             playerPlayAI();
         }
@@ -190,6 +216,7 @@ const main = () => {
     };
 //NEW ROUND
     const startNextRound = () => {
+        table.currentDiceIndexedArray = [0,0,0,0,0,0];
         for (let x = 0; x < table.players.length; x++) {
             table.players[x].roll();
             table.players[x].addOccurrences();
@@ -330,6 +357,7 @@ const main = () => {
     const playerPlayAI = ()=> {
         console.log("Player is Playing");
         let pBT = playerBet();
+        table.currentHand = pBT;
         faceDisplay.innerHTML = `${table.currentPlayerObject.name} bets ${pBT}`;
         return pBT;
     };
