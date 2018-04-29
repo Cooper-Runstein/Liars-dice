@@ -51,13 +51,6 @@ const main = () => {
     });
 
     bluffButton.addEventListener('click', () => {
-        //What it should do:
-        //RETURN challenger
-        //RETURN challenged
-        //DISPLAY "challenge Happened"
-        //RETURN winner
-        //DISPLAY winner
-        //START NEXT ROUND
         console.log(`Bluff initial currentPNum: ${table.currentPlayerIndex}`);
         table.challenger = table.players[0];
         table.challenged = table.currentPlayerObject;
@@ -66,12 +59,20 @@ const main = () => {
         displayElements([nextRoundButton, result]);
         endRound();
     });
+
     nextPlayerButton.addEventListener('click', () => {
         console.log('nextPlayerListener Initialized');
         hideElements([nextPlayerButton]);
-        readyNextPlayer();
+        if (!returnTrueIfHumanTurn()){
+            table.lastBet = playerBet();
+            faceDisplay.innerHTML = `${table.currentPlayerObject.name} bets ${table.lastBet}`;
+        }else{
+            faceDisplay.innerHTML = "";
+        }
+        table.currentPlayerIndex += 1;
         returnNewPlayerNumber();
     });
+
     nextRoundButton.addEventListener('click', () => {
         console.log('nextRoundListener Initialized');
         hideElements([nextRoundButton, test]);
@@ -80,13 +81,12 @@ const main = () => {
         startNextRound();
         firstPlayer();
         console.log(`nextRoundListener exited-> currentPnum: ${table.currentPlayerIndex}`);
-
     });
 
     passButton.addEventListener('click', ()=>{
         hideElements([passButton, bluffButton, spotOnButton]);
         displayElements([nextPlayerButton]);
-        table.lastBet = playerPlayAI();
+        // table.lastBet = playerPlayAI();
     });
 //TESTING AREA
     spotOnButton.addEventListener('click', () => {
@@ -175,7 +175,7 @@ const main = () => {
         }
     };
 //Player set up
-    const setUpNextPlayer = () => {
+    const returnTrueIfHumanTurn = () => {
         table.currentPlayerObject = table.players[table.currentPlayerIndex];
         table.currentPlayersHand = table.currentPlayerObject.hand;
         displayElements([playerDisplay, currentHandDisplay]);
@@ -184,28 +184,25 @@ const main = () => {
             playerDisplay.innerHTML = `<h1 class="text-align">${table.currentPlayerObject.name}</h1>`;
             displayElements([declareDisplay, declareButton, inputs]);
             hideElements([spotOnButton, bluffButton]);
+            return true;
 
         } else {
             displayElements([spotOnButton, bluffButton, passButton, result]);
             result.innerHTML = "";
             playerDisplay.innerHTML = `<h1 class="text-align>${table.currentPlayerObject.name}</h1>`;
             currentHandDisplay.innerHTML = `${table.currentPlayerObject.name} is playing`;
-            playerPlayAI();
+            return false;
+
         }
     };
     const firstPlayer = () => {
         console.log(`firstPlayer Function Initialized-> CurrentPNum: ${table.currentPlayerIndex}`);
-        setUpNextPlayer();
+        returnTrueIfHumanTurn();
         table.currentPlayerIndex += 1;
         returnNewPlayerNumber();
         console.log(`firstPlayer function Exited-> CurrentPNum: ${table.currentPlayerIndex}`);
     };
-    const readyNextPlayer = () => {
-        console.log(`nextPlayer function initial-> currentPNum: ${table.currentPlayerIndex}`);
-        setUpNextPlayer();
-        table.currentPlayerIndex += 1;
-        console.log(`NextPlayer Function Exited -> currentPNum: ${table.currentPlayerIndex}`);
-    };
+
     const returnNewPlayerNumber =  () => {
         if (table.currentPlayerIndex === table.players.length || table.currentPlayerIndex === undefined) {
             console.log(`Zeroing function Initial-> currentPNum: ${table.currentPlayerIndex}`);
