@@ -30,20 +30,24 @@ const main = () => {
     });
 
     declareButton.addEventListener('click', () => {
-        //What it should do:
-        //RETURN Check Player input
-        // RETURN if valid
-        // IF NOTPrompt for renntry
-        //ELSE{ see if ai wants to challenge
-        //IF YES{ RETURN result of challenge
-        //DISPLAY result
-        //DISPLAY next round button only}
-        //IF NO challenge, set bet as last bet
-        //DISPLAY next player button
-        processBetValidity(faceInput.value, countInput.value);
-        hideElements([declareDisplay, declareButton, inputs]);
-        displayElements([result, faceDisplay]);
-        determineChallengeResult(displayChallengeStatus(returnTrueIfAIChallenges()));
+        let face = faceInput.value;
+        let count = countInput.value;
+        let bet = checkIfBetValid(face, count);
+        if(bet !== false){
+            hideElements([declareDisplay, declareButton, inputs]);
+            displayElements([result, faceDisplay]);
+            setLastBet(bet);
+            if (returnTrueIfAIChallenges()){
+               handleChallenge(returnFalseIfBluff());
+                displayElements([nextRoundButton]);
+            }else{
+                declareTurnResults(false);
+                displayElements([nextPlayerButton]);
+            }
+        }else{
+            test2.innerHTML = `Pick Again`;
+        }
+
     });
 
 
@@ -57,9 +61,9 @@ const main = () => {
         //START NEXT ROUND
         console.log(`Bluff initial currentPNum: ${table.currentPlayerIndex}`);
         table.challenger = table.players[0];
-        displayChallengeStatus(true);
-        console.log(`Bluff called on `);
-        determineChallengeResult(true);
+        table.challenged = table.currentPlayerObject;
+        console.log(`Bluff called on ${table.challenged.name}`);
+        handleDisplayonChallenge(true);
         endRound();
     });
     nextPlayerButton.addEventListener('click', () => {
@@ -87,7 +91,7 @@ const main = () => {
 //TESTING AREA
     spotOnButton.addEventListener('click', () => {
         console.log('SpotOn called');
-        displayChallengeStatus(true);
+        decideAiChallenger(true);
         table.challenged = table.currentPlayerObject;
         table.challenger = table.players[0];
         displayElements([nextRoundButton]);
@@ -244,6 +248,38 @@ const main = () => {
         hideElements([result]);
         console.log(`Round Displayed`);
     };
+
+    const handleChallenge = (isBluff)=>{
+        decideAiChallenger();
+        if (isBluff === false){
+            declareTurnResults(true, false);
+            handleChallengeResults(table.challenged);
+        }else{
+            declareTurnResults(true, true);
+            handleChallengeResults(table.challenger);
+        }
+    };
+
+    const declareTurnResults = (challenge, outcome) =>{
+        if (challenge === true){
+            faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${table.challenger.name}</div>`;
+            if (outcome === true){
+                result.innerHTML = `<div>${table.challenger.name}'s Challenge was successful! <br> ${table.challenged.name} loses a die.</div>`
+            }else{
+                result.innerHTML = `<div>${table.challenged.name}'s Challenge failed! <br> ${table.challenger.name} loses a die.</div>`
+            }
+        }else{
+            faceDisplay.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
+        }
+
+    };
+
+    const handleChallengeResults = player =>{
+        removeDie(player);
+        handleLastDieLost(player);
+    };
+
+
 //GAME PLAY FUNCTIONS
     //Player Bets
     const testFunction = () =>{
@@ -272,15 +308,12 @@ const main = () => {
         table.betIsTrue = (table.currentDiceIndexedArray[face - 1] >= count);
         return (table.betIsTrue);
     };
-    const processBetValidity = (face, count) => {
-        if (checkIfBetValid(face, count) !== false) {
-            table.lastBet = checkIfBetValid(face, count);
-            test2.innerHTML = `${table.lastBet}`;
-        } else {
-            test2.innerHTML = "Not Valid Input";
-        }
-        console.log('Hand Declared');
+
+    const setLastBet = (bet) => {
+        table.lastBet = bet;
+        test2.innerHTML = `DECLARED DICE: ${table.lastBet}`;
     };
+
     const reportBet = () =>{
         if (checkBetTruth() === true){
             console.log("reportBet Exit-> checkBet is true");
@@ -307,49 +340,26 @@ const main = () => {
             return Math.random() > .9}
     };
 
-    const displayChallengeStatus = (challenge) =>{
+    const decideAiChallenger = () =>{
         console.log("Reporting Challenge");
-        if (challenge){
-            table.challenged = table.currentPlayerObject;
-            if (table.challenged.player === true){
-                let aiTable = table.players.slice(1);
-                console.log(`AI table ${aiTable}`);
-                table.challenger = aiTable[Math.floor(Math.random() * aiTable.length)];
-                console.log(`challenger is ${table.challenger.name}`);
-                console.log(`challenged is ${table.challenged.name}`);
-            }
-            reportBet();
-            faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${table.challenger.name}</div>`;
-            return true;
-        }else{
-            faceDisplay.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
-            return false;
-        }
+        table.challenged = table.currentPlayerObject;
+        if (table.challenged.player === true){
+            let aiTable = table.players.slice(1);
+            console.log(`AI table ${aiTable}`);
+            table.challenger = aiTable[Math.floor(Math.random() * aiTable.length)];}
+
     };
 
-    const determineChallengeResult = (challenge) =>{
+    const handleDisplayonChallenge = () => {
         console.log("Testing challenge");
-        if (challenge){
-            displayElements([nextRoundButton, result]);
-            hideElements([nextPlayerButton]);
-            if (checkBetTruth()){
-                result.innerHTML = `<div class = "text-success display-4"> Challenge Failed -> ${table.challenger.name} loses a die </div>`;
-                removeDie(table.challenger);
-                if (returnIfLastDie(table.challenger)){
-                    handleLastDieLost(table.challenger);
-                }
-            }else{
-                result.innerHTML = `<div class = "text-danger display-5"> Challenge Succeeded -> ${table.challenged.name} loses a die </div>`;
-                removeDie(table.challenged);
-                if (returnIfLastDie(table.challenged)){
-                    handleLastDieLost(table.challenged);
-                }
-            }
-        }else {
-            displayElements([nextPlayerButton]);
-        }
-        console.log(`Challenge outcome reported`);
+        displayElements([nextRoundButton, result]);
+        hideElements([nextPlayerButton]);
     };
+
+    const returnFalseIfBluff = ()=>{
+        return (table.currentDiceIndexedArray[table.lastBet[0]-1] <= table.lastBet[1]);
+    };
+
     const removeDie = (player) =>{
         player.hand  = player.hand.splice(1);
     };
