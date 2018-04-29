@@ -50,7 +50,6 @@ const main = () => {
 
     });
 
-
     bluffButton.addEventListener('click', () => {
         //What it should do:
         //RETURN challenger
@@ -63,7 +62,8 @@ const main = () => {
         table.challenger = table.players[0];
         table.challenged = table.currentPlayerObject;
         console.log(`Bluff called on ${table.challenged.name}`);
-        handleDisplayonChallenge(true);
+        handleChallenge(returnFalseIfBluff());
+        displayElements([nextRoundButton, result]);
         endRound();
     });
     nextPlayerButton.addEventListener('click', () => {
@@ -264,9 +264,9 @@ const main = () => {
         if (challenge === true){
             faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${table.challenger.name}</div>`;
             if (outcome === true){
-                result.innerHTML = `<div>${table.challenger.name}'s Challenge was successful! <br> ${table.challenged.name} loses a die.</div>`
+                result.innerHTML = `<div class="display-4">${table.challenger.name}'s Challenge was successful! <br> ${table.challenged.name} loses a die.</div>`
             }else{
-                result.innerHTML = `<div>${table.challenged.name}'s Challenge failed! <br> ${table.challenger.name} loses a die.</div>`
+                result.innerHTML = `<div class="display-4">${table.challenger.name}'s Challenge failed! <br> ${table.challenger.name} loses a die.</div>`
             }
         }else{
             faceDisplay.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
