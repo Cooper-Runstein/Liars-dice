@@ -33,21 +33,21 @@ const main = () => {
         displayElements([submit, playersInput, nameInput]);
     });
     submit.addEventListener('click', ()=>{
-      let gameInitialValues = returnGameSettings();
-      if(gameInitialValues !== false){
-        game(gameInitialValues);}else{
-          console.log("false");
+        let gameInitialValues = returnGameSettings();
+        if(gameInitialValues !== false){
+            game(gameInitialValues);}else{
+            console.log("false");
         }
     });
 
-    returnGameSettings = ()=>{
-      let name = nameInput.value;
-      if (10 > playersInput.value > 0){
-        console.log(`playersInput.value = ${playersInput.value}`)
-        let numPlayers = playersInput.value;
-        hideElements([submit, playersInput, nameInput]);
-        return ([name, numPlayers]);
-      }return false;
+    const returnGameSettings = ()=>{
+        let name = nameInput.value;
+        if (10 > playersInput.value > 0){
+            console.log(`playersInput.value = ${playersInput.value}`);
+            let numPlayers = playersInput.value;
+            hideElements([submit, playersInput, nameInput]);
+            return ([name, numPlayers]);
+        }return false;
     };
 
 
@@ -84,7 +84,7 @@ const main = () => {
     passButton.addEventListener('click', ()=>{
         hideElements([passButton, bluffButton, spotOnButton]);
         displayElements([nextPlayerButton]);
-        lastBet = playerPlayAI();
+
     });
 //TESTING AREA
     spotOnButton.addEventListener('click', () => {
@@ -102,14 +102,14 @@ const main = () => {
 
     const createPlayers = (num)=>{
         for (let i =0; i <num; i++){
-          let x = new Player();
-          x.addToTable();
+            let x = new Player();
+            x.addToTable();
         }
-    }
+    };
     let names = [
-      "Shirleen", "Kara", "Cleveland","Merri", "Conception", "Haley", "Florance", "Dorie", "Luella", "Vernia",
-      "Freeman", "Katharina", "Charmain", "Graham", "Darnell", "Bernetta", "Inell", "Page", "Garnett", "Annalisa",
-       "Brant", "Valda", "Viki", "Asuncion", "Moira", "Kaycee", "Richelle", "Elicia", "Eneida", "Evelynn"
+        "Shirleen", "Kara", "Cleveland","Merri", "Conception", "Haley", "Florance", "Dorie", "Luella", "Vernia",
+        "Freeman", "Katharina", "Charmain", "Graham", "Darnell", "Bernetta", "Inell", "Page", "Garnett", "Annalisa",
+        "Brant", "Valda", "Viki", "Asuncion", "Moira", "Kaycee", "Richelle", "Elicia", "Eneida", "Evelynn"
     ];
 
 // ###############OBJECTS AT TABLE##############
@@ -193,7 +193,7 @@ const main = () => {
             result.innerHTML = "";
             currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
             currentHandDisplay.innerHTML = `${currentPlayer.name} is playing`;
-            playerPlayAI();
+            lastBet = playerPlayAI();
         }
     };
     const firstPlayer = () => {
@@ -364,6 +364,11 @@ const main = () => {
         console.log("Player is Playing");
         let pBT = playerBet();
         faceDisplay.innerHTML = `${currentPlayer.name} bets ${pBT}`;
+        console.log(pBT);
+        console.log(pBT);
+        console.log(pBT);
+        console.log(pBT);
+        console.log(pBT);
         return pBT;
     };
 
@@ -383,10 +388,10 @@ const main = () => {
         if (aiCheckCurrentHandValidity(bestHand)){
             if (Math.random() > .8){
                 bestHand[1] += 1;
-                console.log("Player bluffed");
+                console.log(`Player bluffed ${bestHand}`);
                 return bestHand;
             }
-            console.log("player has made bet");
+            console.log(`Player did not bluffed ${bestHand}`);
             return bestHand;
         }else{ //IF player needs to bluff
             while (aiCheckCurrentHandValidity(bestHand) !== true){
@@ -394,9 +399,10 @@ const main = () => {
             }
             if (Math.random() < .2){
                 bestHand[1] += 1;
+                console.log(`Player bluffed +1 ${bestHand}`);
                 return bestHand;
             }
-            console.log("player has guessed and bet");
+            console.log(`Player bluffed ${bestHand}`);
             return bestHand
         }
     };
