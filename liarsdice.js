@@ -100,8 +100,11 @@ const main = () => {
         return !(diceOnTableIndexedArray[checkArr[0] -1] === checkArr[1])
     };
 
-    const createPlayers = ()=>{
-
+    const createPlayers = (num)=>{
+        for (let i =0; i <num; i++){
+          let x = new Player();
+          x.addToTable();
+        }
     }
     let names = [
       "Shirleen", "Kara", "Cleveland","Merri", "Conception", "Haley", "Florance", "Dorie", "Luella", "Vernia",
@@ -120,7 +123,7 @@ const main = () => {
             }
             console.log(`${this.name} has rolled`);
         };
-        this.addToTable = (table) => {
+        this.addToTable = () => {
             table.push(this);
         };
         this.addOccurrences = () =>{
@@ -152,6 +155,7 @@ const main = () => {
         console.log("startGame Function initialized");
         let human = new Player(initialValues[0]);
         human.addToTable(table);
+        createPlayers(initialValues[1]);
         // sam.addToTable(table);
         // jim.addToTable(table);
         if (table[0] !== undefined) {
