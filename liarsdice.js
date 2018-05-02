@@ -194,6 +194,7 @@ const main = () => {
             lastBet = playerPlayAI();
         }
     };
+
     const firstPlayer = () => {
         console.log(`firstPlayer Function Initialized-> CurrentPNum: ${PlayerNumber}`);
         setUpNextPlayer();
@@ -201,12 +202,14 @@ const main = () => {
         returnNewPlayerNumber();
         console.log(`firstPlayer function Exited-> CurrentPNum: ${PlayerNumber}`);
     };
+
     const readyNextPlayer = () => {
         console.log(`nextPlayer function initial-> currentPNum: ${PlayerNumber}`);
         setUpNextPlayer();
         PlayerNumber += 1;
         console.log(`NextPlayer Function Exited -> currentPNum: ${PlayerNumber}`);
     };
+
     const returnNewPlayerNumber = () => {
         if (PlayerNumber === table.length || PlayerNumber === undefined) {
             console.log(`Zeroing function Initial-> currentPNum: ${PlayerNumber}`);
@@ -219,6 +222,7 @@ const main = () => {
             console.log(`Zero Exit -> currentPNum: ${PlayerNumber}`)
         }
     };
+
 //NEW ROUND
     const startNextRound = () => {
         for (let x = 0; x < table.length; x++) {
@@ -231,6 +235,7 @@ const main = () => {
         console.log(`startNextRound function exited`);
 
     };
+
     const endRound = () => {
         console.log("endRound Function initial");
         resetRoundVariables();
@@ -238,6 +243,7 @@ const main = () => {
         PlayerNumber -= 1;
         console.log(`endRound function exited -> currentPNum: ${PlayerNumber}`);
     };
+
     const resetRoundVariables = () => {
         lastBet = [0,0];
         betIsTrue = false;
@@ -245,10 +251,12 @@ const main = () => {
         hideElements([passButton, bluffButton, spotOnButton, nextPlayerButton]);
         console.log(`Round Cleared`);
     };
+
     const displayRound = () => {
         hideElements([result]);
         console.log(`Round Displayed`);
     };
+
 //GAME PLAY FUNCTIONS
     //Player Bets
     const testFunction = () =>{
@@ -312,16 +320,14 @@ const main = () => {
             return Math.random() > .9}
     };
 
+
     const displayChallengeStatus = (challenge) =>{
         console.log("Reporting Challenge");
         if (challenge){
             challenged = currentPlayer;
             if (challenged.player === true){
                 let aiTable = table.slice(1);
-                console.log(`AI table ${aiTable}`);
                 challenger = aiTable[Math.floor(Math.random() * aiTable.length)];
-                console.log(`challenger is ${challenger.name}`);
-                console.log(`challenged is ${challenged.name}`);
             }
             reportBet();
             faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`;
@@ -346,28 +352,22 @@ const main = () => {
 
     const handleChallengeCheck = (betBoolean)=>{
         if(betBoolean){
-            let color = "";
-            if (challenger.player === true){
-                color = "text-danger";
-            }else if(challenged.player === true){
-                color = "text-success";
-            }
+            let color = getMessageColor(challenger,challenged);
             result.innerHTML = `<div class = "${color} display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`;
             removeDie(challenger);
             checkIfEliminated(challenger);
     }else{
-            let color = getMessageColor();
+            let color = getMessageColor(challenged, challenger);
             result.innerHTML = `<div class = "${color} display-4"> Challenge Succeeded -> ${challenged.name} loses a die </div>`;
             removeDie(challenged);
             checkIfEliminated(challenged);
-
         }
     };
 
-    const getMessageColor = () =>{
-        if (challenged.player === true){
+    const getMessageColor = (loser, winner) =>{
+        if (loser.player === true){
             return "text-danger";
-        }else if(challenger.player === true){
+        }else if(winner.player === true){
             return "text-success";
         }return ""
 
@@ -406,31 +406,28 @@ const main = () => {
         return currentHandInts;
     };
     const playerBet = () => {
-        console.log(`Player is betting`);
         let currentHandInts = countFaces();
         let largestCount = Math.max(...currentHandInts);
         let bestHand = [currentHandInts.indexOf(largestCount)+1, largestCount];
-        if (aiCheckCurrentHandValidity(bestHand)){
-            if (Math.random() > .8){
-                bestHand[1] += 1;
-                console.log(`Player bluffed ${bestHand}`);
-                return bestHand;
-            }
-            console.log(`Player did not bluffed ${bestHand}`);
-            return bestHand;
-        }else{ //IF player needs to bluff
-            while (aiCheckCurrentHandValidity(bestHand) !== true){
-                bestHand[1] += 1;
-            }
-            if (Math.random() < .2){
-                bestHand[1] += 1;
-                console.log(`Player bluffed +1 ${bestHand}`);
-                return bestHand;
-            }
-            console.log(`Player bluffed ${bestHand}`);
-            return bestHand
-        }
+        return aiBluff(bestHand);
     };
+
+    const aiBluff = (bestHand)=>{
+        while (aiCheckCurrentHandValidity(bestHand) !== true){
+            bestHand[1] += 1;
+        }
+        if (Math.random() < .3){
+            bestHand[1] += 1;
+            return bestHand;
+        }else{
+            if (Math.random() < .1){
+                bestHand[1] += 2;
+                return bestHand;
+            }
+        }
+        return bestHand
+    };
+
 
     const aiCheckCurrentHandValidity = hand => {
         console.log(`checking if hand is bigger -> bestHand: ${hand}`);
@@ -444,7 +441,6 @@ const main = () => {
     const handleLastDieLost = player =>{
         let index = table.indexOf(player);
         table = table.splice(index, 1);
-
     };
 
 //Game Start Functions
