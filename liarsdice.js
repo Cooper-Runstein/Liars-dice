@@ -156,8 +156,6 @@ const main = () => {
         let human = new Player(initialValues[0]);
         human.addToTable(table);
         createPlayers(initialValues[1]);
-        // sam.addToTable(table);
-        // jim.addToTable(table);
         if (table[0] !== undefined) {
             table[0].player = true;
             console.log("Players have been sat");
@@ -191,8 +189,8 @@ const main = () => {
         } else {
             displayElements([spotOnButton, bluffButton, passButton, result]);
             result.innerHTML = "";
-            currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
-            currentHandDisplay.innerHTML = `${currentPlayer.name} is playing`;
+            currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name} is playing</h1>`;
+            currentHandDisplay.innerHTML = `Your hand is: ${table[0].hand}`;
             lastBet = playerPlayAI();
         }
     };
@@ -243,6 +241,7 @@ const main = () => {
     const resetRoundVariables = () => {
         lastBet = [0,0];
         betIsTrue = false;
+        betFaceOccurrence = [0,0,0,0,0,0];
         hideElements([passButton, bluffButton, spotOnButton, nextPlayerButton]);
         console.log(`Round Cleared`);
     };
@@ -270,7 +269,7 @@ const main = () => {
         return false;
     };
 
-    const checkBetTruth = () => {
+    const getBetTruth = () => {
         console.log(`checking bet -> lastBet: ${lastBet} `);
         let face = lastBet[0];
         let count = lastBet[1];
@@ -288,7 +287,7 @@ const main = () => {
         console.log('Hand Declared');
     };
     const reportBet = () =>{
-        if (checkBetTruth() === true){
+        if (getBetTruth() === true){
             console.log("reportBet Exit-> checkBet is true");
             return true;
         }else{
@@ -338,24 +337,49 @@ const main = () => {
         if (challenge){
             displayElements([nextRoundButton, result]);
             hideElements([nextPlayerButton]);
-            if (checkBetTruth()){
-                result.innerHTML = `<div class = "text-success display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`
-                removeDie(challenger);
-                if (returnIfLastDie(challenger)){
-                    handleLastDieLost(challenger);
-                }
-            }else{
-                result.innerHTML = `<div class = "text-danger display-5"> Challenge Succeeded -> ${challenged.name} loses a die </div>`
-                removeDie(challenged);
-                if (returnIfLastDie(challenged)){
-                    handleLastDieLost(challenged);
-                }
-            }
+            handleChallengeCheck(getBetTruth());
         }else {
             displayElements([nextPlayerButton]);
         }
         console.log(`Challenge outcome reported`);
     };
+
+    const handleChallengeCheck = (betBoolean)=>{
+        if(betBoolean){
+            let color = "";
+            if (challenger.player === true){
+                color = "text-danger";
+            }else if(challenged.player === true){
+                color = "text-success";
+            }
+            result.innerHTML = `<div class = "${color} display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`;
+            removeDie(challenger);
+            checkIfEliminated(challenger);
+    }else{
+            let color = getMessageColor();
+            result.innerHTML = `<div class = "${color} display-4"> Challenge Succeeded -> ${challenged.name} loses a die </div>`;
+            removeDie(challenged);
+            checkIfEliminated(challenged);
+
+        }
+    };
+
+    const getMessageColor = () =>{
+        if (challenged.player === true){
+            return "text-danger";
+        }else if(challenger.player === true){
+            return "text-success";
+        }return ""
+
+    };
+
+    const checkIfEliminated = (betLoser)=>{
+        if (returnIfLastDie(betLoser)){
+            handleLastDieLost(betLoser);
+        }
+
+    };
+
     const removeDie = (player) =>{
         player.hand  = player.hand.splice(1);
     };
@@ -369,6 +393,7 @@ const main = () => {
         console.log(pBT);
         console.log(pBT);
         console.log(pBT);
+        test2.innerHTML=`Last Bet: ${lastBet}`;
         return pBT;
     };
 
