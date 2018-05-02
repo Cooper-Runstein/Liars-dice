@@ -74,8 +74,14 @@ const main = () => {
 //TESTING AREA
     spotOnButton.addEventListener('click', () => {
         console.log('SpotOn called');
-        console.log(checkSpotOn());
-        displayElements([nextRoundButton]);
+        challenger = table[0];
+        challenged = currentPlayer;
+        if(checkSpotOn()){
+            result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
+        }else{
+            result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
+        }
+        displayElements([result, nextRoundButton]);
         endRound();
     });
 
@@ -194,7 +200,6 @@ const main = () => {
         }
     };
 
-
     const setUpHumanTurn = ()=>{
         currentHandDisplay.innerHTML = `<h1 class="text-align">${currentHand}</h1>`;
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
@@ -286,7 +291,7 @@ const main = () => {
         if (bet !== false) {
             lastBet = bet;
             displayAndHide([result, faceDisplay], [declareDisplay, declareButton, inputs]);
-            test2.innerHTML = `${lastBet}`;
+            test2.innerHTML = `Last Bet: ${lastBet}`;
             return true;
         } else {
             test2.innerHTML = "Not Valid Input";
@@ -301,10 +306,6 @@ const main = () => {
             return [face, count];
         }
         return false;
-    };
-
-    const reportBet = () =>{
-        return getBetTruth();
     };
 
     const returnDieOnTableRatio = () => {
@@ -332,7 +333,6 @@ const main = () => {
                 let aiTable = table.slice(1);
                 challenger = aiTable[Math.floor(Math.random() * aiTable.length)];
             }
-            reportBet();
             faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`;
             return true;
         }else{
@@ -384,11 +384,10 @@ const main = () => {
 
     //Computer bets
     const playerPlayAI = ()=> {
-        console.log("Player is Playing");
-        let pBT = playerBet();
-        faceDisplay.innerHTML = `${currentPlayer.name} bets ${pBT}`;
+        let newBet = playerBet();
+        faceDisplay.innerHTML = `${currentPlayer.name} bets ${newBet}`;
         test2.innerHTML=`Last Bet: ${lastBet}`;
-        return pBT;
+        return newBet;
     };
 
     const countFaces = () =>{
