@@ -43,6 +43,7 @@ const main = () => {
 
     bluffButton.addEventListener('click', () => {
         challenger = table[0];
+        challenged = currentPlayer;
         displayChallengeStatus(true);
         determineChallengeResult(true);
         endRound();
@@ -340,8 +341,7 @@ const main = () => {
         let face = lastBet[0];
         let count = lastBet[1];
         console.log(diceOnTableIndexedArray);
-        let betIsTrue = (diceOnTableIndexedArray[face - 1] >= count);
-        return (betIsTrue);
+        return diceOnTableIndexedArray[face - 1] >= count;
     };
 
     const processBetValidity = (face, count) => {
