@@ -79,23 +79,6 @@ const main = () => {
      }
     });
 
-    const getChallengers = (face)=>{
-        console.log("Getting Challengers");
-        let challengers = [];
-        for (let i=1; i < table.length; i++){
-            if(table[i].returnTrueIfAIChallenges(face)){
-                challengers.push(table[i])
-            }
-        }return challengers;
-    };
-
-    const getOpponent = (challengers)=>{
-        let index = Math.floor(Math.random() * Math.floor(challengers.length));
-        console.log(challengers[index]);
-        return challengers[index]
-    };
-
-
     passButton.addEventListener('click', ()=>{
         displayAndHide([nextPlayerButton], [passButton, bluffButton, spotOnButton]);
     });
@@ -235,10 +218,17 @@ const main = () => {
     };
 
     const getRandomName = ()=> {
-        let index = Math.floor(Math.random() * Math.floor(30));
-        let name = names[index];
-        names.splice(index, 1);
-        return name;
+        //NEED BETTER FUTURE SOLUTION
+        while(true){
+            let index = Math.floor(Math.random() * Math.floor(30));
+            let name = names[index];
+            if (name === undefined){
+            }else{
+                names.splice(index, 1);
+                return name;
+            }
+        }
+        
     };
 
     const createAiPlayers = (num)=>{
@@ -271,6 +261,11 @@ const main = () => {
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name} is playing</h1>`;
         currentHandDisplay.innerHTML = `Your hand is: ${table[0].hand}`;
         lastBet = playerPlayAI();
+        //runAiAgainstAi();
+    };
+
+    const runAIAgainstAI = ()=>{
+
     };
 
     const getNextPlayer = ()=>{
@@ -357,7 +352,6 @@ const main = () => {
     };
 
 
-   //lastFace = 2, lastCount = 5 face=3, count=5
     const getBetIfValid = (face, count) => {
         //FIX ME?
         face = parseInt(face);
@@ -378,6 +372,21 @@ const main = () => {
             return [face, count];
         }
         return false;
+    };
+
+    const getChallengers = (face)=>{
+        let challengers = [];
+        for (let i=1; i < table.length; i++){
+            if(table[i].returnTrueIfAIChallenges(face)){
+                challengers.push(table[i])
+            }
+        }return challengers;
+    };
+
+    const getOpponent = (challengers)=>{
+        let index = Math.floor(Math.random() * Math.floor(challengers.length));
+        console.log(challengers[index]);
+        return challengers[index]
     };
 
     const displayChallengeStatus = (challenge) =>{
