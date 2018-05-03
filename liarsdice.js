@@ -3,7 +3,7 @@ const main = () => {
 //###########Document buttons and displays##############
 //displays
     let currentHandDisplay = document.querySelector("#currentHand");
-    let currentPlayerDisplay = document.querySelector("#currentPlayer");
+    let currentPlayerDisplay = document.querySelector("#playerDisplay");
     let playerOptionsDisplay = document.querySelector("#playerOptions");
     let test = document.querySelector("#test");
     let test2 = document.querySelector("#test2");
@@ -194,7 +194,6 @@ const main = () => {
 
     //generic functions
     const displayElements = (array) =>{
-
         for (let element = 0; element < array.length; element++){
         array[element].style.display = 'block';}
     };
@@ -318,7 +317,7 @@ const main = () => {
 
     const resetRoundVariables = () => {
         lastBet = [0,0];
-        betFaceOccurrence = 0;
+        betFaceOlastCountccurrence = 0;
         numberOfDie = 0;
         diceOnTableIndexedArray=[0,0,0,0,0,0];
         hideElements([passButton, bluffButton, spotOnButton, nextPlayerButton]);
@@ -357,10 +356,23 @@ const main = () => {
         }
     };
 
+
+   //astFace = 0, lastCount = 0 face=0, count=1
     const getBetIfValid = (face, count) => {
+        //FIX ME?
         let lastFace = lastBet[0];
         let lastCount = lastBet[1];
-        if ((face > lastFace && count === lastCount) || count > lastCount) {
+        console.log(`lastFace = ${lastBet[0]}, lastCount = ${lastBet[1]} face=${face}, count=${count}`);
+        if (
+            (   ((face > lastFace) &&
+                (count === lastCount)) &&
+                ((count > 0) && (7 > face > 0))
+            )
+
+            ||
+
+            ((count > lastCount) && ((count > 0) && (7 > face && face > 0)))
+        ) {
             betFaceOccurrence = count;
             return [face, count];
         }
