@@ -134,25 +134,46 @@ const main = () => {
                 let playerNum = getFaceCount(this, face);
                 console.log(face);
                 console.log(playerNum);
-                let dif = dieRatio(playerNum);
-                console.log(dif);
-                if (dif < 0) {
+                let pct = dieRatio(playerNum);
+                console.log(pct);
+                if (pct <= (2 / 12)) {
+                    return Math.random() < .2
+                }else if (pct <= (4 / 12)){
+                    return Math.random() < .4
+                }else if(pct <= (5 / 12)){
+                    return Math.random() < .6
+                }else if(pct <= (6 / 12)){
+                    return Math.random() < .8
+                }else{
                     return true;
-                }else if (dif === 0){
-                    return Math.random() > .1
-                }else if (.2 >= dif > .4 ) {
-                    return Math.random() > .25
-                }else if (.4 >= dif > .6 ){
-                    return Math.random() > .5
-                }else if (.6 >= dif > .8){
-                    return Math.random() > .75
-                }else if (.8 >= dif){
-                    return Math.random() > .9}
-            };
+                }
+            }
 
 
-        }
-    }
+
+
+
+
+
+
+
+
+                // if (pct >= 1) {
+                //     return true;
+                // }else if ( (1 > pct) && (pct >= .8) ) {
+                //     return Math.random() > .2
+                // }else if ((.8 > pct) && (pct >= .6) ){
+                //     return Math.random() > .5
+                // }else if((.6 > pct) && (pct >= .4) ){
+                //     return Math.random() > .75
+                // }else if ((.4 > pct) && (pct >= .2) ){
+                //     return Math.random() > .9
+                // }else if ((.2 > pct) && (pct > 0) ) {
+                //     return Math.random() > .95
+                // } else if (pct === 0){
+        //         return false}
+        // }
+    }}
     let getFaceCount = (player, face)=>{
         let arr = countFaces(player.hand);
         console.log(player.name + arr);
@@ -160,7 +181,7 @@ const main = () => {
     };
 
     let dieRatio = (playerNum) => {
-        return (numberOfDie - (betFaceOccurrence-playerNum))/numberOfDie;
+        return (betFaceOccurrence-playerNum)/numberOfDie;
     };
 
     //Main Variables
@@ -254,15 +275,16 @@ const main = () => {
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name} is playing</h1>`;
         currentHandDisplay.innerHTML = `Your hand is: ${table[0].hand}`;
         lastBet = playerPlayAI();
+        test2.innerHTML=`Last Bet: ${lastBet}`;
         runAiAgainstAi();
     };
 
     const runAiAgainstAi = ()=>{
-        let challengers = getChallengers(faceInput.value);
+        let challengers = getChallengers(lastBet[0]);
         if (challengers.length > 0){
             challenger = getOpponent(challengers);
             challenged = currentPlayer;
-            hideElements([bluffButton,spotOnButton,passButton]);
+            hideElements([bluffButton, spotOnButton, passButton]);
             displayChallengeStatus(true);
             determineChallengeResult();
         }else{
@@ -355,7 +377,6 @@ const main = () => {
 
 
     const getBetIfValid = (face, count) => {
-        //FIX ME?
         face = parseInt(face);
         count = parseInt(count);
         let lastFace = lastBet[0];
@@ -442,7 +463,6 @@ const main = () => {
         let newBet = playerBet();
         displayElements([betDisplay]);
         betDisplay.innerHTML = `${currentPlayer.name} bets ${newBet}`;
-        test2.innerHTML=`Last Bet: ${lastBet}`;
         return newBet;
     };
 
