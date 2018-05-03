@@ -102,7 +102,7 @@ const main = () => {
     };
 
 
-   const names = [
+   let names = [
         "Shirleen", "Kara", "Cleveland","Merri", "Conception", "Haley", "Florance", "Dorie", "Luella", "Vernia",
         "Freeman", "Katharina", "Charmain", "Graham", "Darnell", "Bernetta", "Inell", "Page", "Garnett", "Annalisa",
         "Brant", "Valda", "Viki", "Asuncion", "Moira", "Kaycee", "Richelle", "Elicia", "Eneida", "Evelynn"
@@ -218,17 +218,10 @@ const main = () => {
     };
 
     const getRandomName = ()=> {
-        //NEED BETTER FUTURE SOLUTION
-        while(true){
-            let index = Math.floor(Math.random() * Math.floor(30));
+            let index = Math.floor(Math.random() * Math.floor(names.length));
             let name = names[index];
-            if (name === undefined){
-            }else{
-                names.splice(index, 1);
-                return name;
-            }
-        }
-        
+            names.splice(index, 1);
+            return name;
     };
 
     const createAiPlayers = (num)=>{
