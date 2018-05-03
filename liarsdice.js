@@ -357,15 +357,16 @@ const main = () => {
     };
 
 
-   //astFace = 0, lastCount = 0 face=0, count=1
+   //lastFace = 2, lastCount = 5 face=3, count=5
     const getBetIfValid = (face, count) => {
         //FIX ME?
+        face = parseInt(face);
+        count = parseInt(count);
         let lastFace = lastBet[0];
         let lastCount = lastBet[1];
         console.log(`lastFace = ${lastBet[0]}, lastCount = ${lastBet[1]} face=${face}, count=${count}`);
         if (
-            (   ((face > lastFace) &&
-                (count === lastCount)) &&
+            (   ((face > lastFace) && (count === lastCount)) &&
                 ((count > 0) && (7 > face > 0))
             )
 
