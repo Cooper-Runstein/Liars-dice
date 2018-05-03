@@ -63,9 +63,34 @@ const main = () => {
     });
 
     declareButton.addEventListener('click', () => {
-        if(processBetValidity(faceInput.value, countInput.value)){
-        determineChallengeResult(displayChallengeStatus(returnTrueIfAIChallenges()));}
+        if(processBetValidity(faceInput.value, countInput.value)) {
+            let challengers = getChallengers(faceInput.value);
+            if (challengers.length > 0){
+                 let opponent = getOpponent();
+                 determineChallenge(opponent);
+             }else{
+                 
+            }
+     }
     });
+
+    const getChallengers = (face)=>{
+        let challengers = [];
+        for (let i=0; i < table.length; i++){
+            if(table[i].returnTrueIfAIChallenges(face)){
+            }
+        }return challengers;
+    };
+    
+    const getOpponent = (challengers)=>{
+        let index = Math.floor(Math.random() * Math.floor(challengers.length));
+        return challengers[index]
+    };
+    
+    const determineChallenge = (opponent)=> {
+        
+    };
+
 
     passButton.addEventListener('click', ()=>{
         displayAndHide([nextPlayerButton], [passButton, bluffButton, spotOnButton]);
@@ -118,8 +143,34 @@ const main = () => {
                 }
                 numberOfDie += this.hand.length;
             };
+            this.returnTrueIfAIChallenges = (face) => {
+                let playerNum = getFaceCount(this, face);
+                let dif = dieRatio(playerNum);
+                if (dif < 0) {
+                    return true;
+                }else if (dif === 0){
+                    return Math.random() > .1
+                }else if (.2 >= dif > .4 ) {
+                    return Math.random() > .25
+                }else if (.4 >= dif > .6 ){
+                    return Math.random() > .5
+                }else if (.6 >= dif > .8){
+                    return Math.random() > .75
+                }else if (.8 >= dif){
+                    return Math.random() > .9}
+            };
+
+
         }
     }
+    let getFaceCount = (player, face)=>{
+        let arr = countFaces(player.hand);
+        return arr[face-1];
+    };
+
+    let dieRatio = (playerNum) => {
+        return (numberOfDie - (betFaceOccurrence-playerNum))/numberOfDie;
+    };
 
     //Main Variables
     let table = [];
@@ -154,6 +205,7 @@ const main = () => {
 
 
 //#############Game Functions###################
+
     const startGame = (initialValues) => {
         createHumanPlayer(initialValues);
         createAiPlayers(initialValues[1]);
@@ -308,24 +360,6 @@ const main = () => {
         return false;
     };
 
-    const returnDieOnTableRatio = () => {
-        return (numberOfDie - betFaceOccurrence)/numberOfDie;
-    };
-
-    const returnTrueIfAIChallenges = () => {
-        let dif = returnDieOnTableRatio();
-        if (dif < 0) {
-            return true;
-        }else if (dif === 0){
-            return Math.random() > .2
-        }else if (.2 >= dif > .6 ){
-            return Math.random() > .4
-        }else if (.6 >= dif > .8){
-            return Math.random() > .7
-        }else if (.8 >= dif){
-            return Math.random() > .9}
-    };
-
     const displayChallengeStatus = (challenge) =>{
         if (challenge){
             challenged = currentPlayer;
@@ -390,15 +424,15 @@ const main = () => {
         return newBet;
     };
 
-    const countFaces = () =>{
+    const countFaces = (hand) =>{
         let currentHandInts = [0, 0, 0, 0, 0, 0];
-        for (let i = 0; i < currentHand.length; i++) {
-            currentHandInts[currentHand[i] - 1] += 1;
+        for (let i = 0; i < hand.length; i++) {
+            currentHandInts[hand[i] - 1] += 1;
         }
         return currentHandInts;
     };
     const playerBet = () => {
-        let currentHandInts = countFaces();
+        let currentHandInts = countFaces(currentHand);
         let largestCount = Math.max(...currentHandInts);
         let bestHand = [currentHandInts.indexOf(largestCount)+1, largestCount];
         return aiBluff(bestHand);
