@@ -254,11 +254,20 @@ const main = () => {
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name} is playing</h1>`;
         currentHandDisplay.innerHTML = `Your hand is: ${table[0].hand}`;
         lastBet = playerPlayAI();
-        //runAiAgainstAi();
+        runAiAgainstAi();
     };
 
-    const runAIAgainstAI = ()=>{
-
+    const runAiAgainstAi = ()=>{
+        let challengers = getChallengers(faceInput.value);
+        if (challengers.length > 0){
+            challenger = getOpponent(challengers);
+            challenged = currentPlayer;
+            displayChallengeStatus(true);
+            determineChallengeResult();
+        }else{
+            displayChallengeStatus(false);
+            displayElements([nextPlayerButton]);
+        }
     };
 
     const getNextPlayer = ()=>{
@@ -306,7 +315,7 @@ const main = () => {
 
     const resetRoundVariables = () => {
         lastBet = [0,0];
-        betFaceOlastCountccurrence = 0;
+        betFaceOccurrence = 0;
         numberOfDie = 0;
         diceOnTableIndexedArray=[0,0,0,0,0,0];
         hideElements([passButton, bluffButton, spotOnButton, nextPlayerButton]);
