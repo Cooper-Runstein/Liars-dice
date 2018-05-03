@@ -291,10 +291,10 @@ const main = () => {
         if (bet !== false) {
             lastBet = bet;
             displayAndHide([result, faceDisplay], [declareDisplay, declareButton, inputs]);
-            test2.innerHTML = `Last Bet: ${lastBet}`;
+            test2.innerHTML = `<p class="display-5 text-info">Last Bet: ${lastBet}</p>`;
             return true;
         } else {
-            test2.innerHTML = "Not Valid Input";
+            test2.innerHTML = `<p class="display-5 text-info">Not Valid Input</p>`;
         }
     };
 
