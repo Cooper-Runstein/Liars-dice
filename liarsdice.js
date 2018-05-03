@@ -64,31 +64,34 @@ const main = () => {
 
     declareButton.addEventListener('click', () => {
         if(processBetValidity(faceInput.value, countInput.value)) {
+            console.log("declarebutton validated");
             let challengers = getChallengers(faceInput.value);
             if (challengers.length > 0){
-                 let opponent = getOpponent();
-                 determineChallenge(opponent);
+                 challenger = getOpponent(challengers);
+                 challenged = table[0];
+                 displayChallengeStatus(true);
+                 determineChallengeResult();
              }else{
-                 
+                displayChallengeStatus(false);
+                displayElements([nextPlayerButton]);
             }
      }
     });
 
     const getChallengers = (face)=>{
+        console.log("Getting Challengers");
         let challengers = [];
-        for (let i=0; i < table.length; i++){
+        for (let i=1; i < table.length; i++){
             if(table[i].returnTrueIfAIChallenges(face)){
+                challengers.push(table[i])
             }
         }return challengers;
     };
-    
+
     const getOpponent = (challengers)=>{
         let index = Math.floor(Math.random() * Math.floor(challengers.length));
+        console.log(challengers[index]);
         return challengers[index]
-    };
-    
-    const determineChallenge = (opponent)=> {
-        
     };
 
 
@@ -145,7 +148,10 @@ const main = () => {
             };
             this.returnTrueIfAIChallenges = (face) => {
                 let playerNum = getFaceCount(this, face);
+                console.log(face);
+                console.log(playerNum);
                 let dif = dieRatio(playerNum);
+                console.log(dif);
                 if (dif < 0) {
                     return true;
                 }else if (dif === 0){
@@ -165,6 +171,7 @@ const main = () => {
     }
     let getFaceCount = (player, face)=>{
         let arr = countFaces(player.hand);
+        console.log(player.name + arr);
         return arr[face-1];
     };
 
@@ -362,26 +369,16 @@ const main = () => {
 
     const displayChallengeStatus = (challenge) =>{
         if (challenge){
-            challenged = currentPlayer;
-            if (challenged.player === true){
-                let aiTable = table.slice(1);
-                challenger = aiTable[Math.floor(Math.random() * aiTable.length)];
-            }
             faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`;
-            return true;
         }else{
             faceDisplay.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
-            return false;
         }
     };
 
-    const determineChallengeResult = (challenge) =>{
-        if (challenge){
-            displayAndHide([nextRoundButton, result], [nextPlayerButton]);
-            handleChallengeCheck(getBetTruth());
-        }else {
-            displayElements([nextPlayerButton]);
-        }
+    const determineChallengeResult = () =>{
+        displayAndHide([nextRoundButton, result], [nextPlayerButton]);
+        handleChallengeCheck(getBetTruth());
+
     };
 
     const handleChallengeCheck = (betBoolean)=>{
