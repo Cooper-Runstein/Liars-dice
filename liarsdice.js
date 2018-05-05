@@ -31,22 +31,22 @@ const main = () => {
 
     //Images
     const die1 = document.createElement("img");
-    die1.src="../images/die1.png";
+    die1.src="images/die1.png";
 
     const die2 = document.createElement("img");
-    die2.src="../images/die2.png";
+    die2.src="images/die2.png";
 
     const die3 = document.createElement("img");
-    die3.src="../images/die3.png";
+    die3.src="images/die3.png";
 
     const die4 = document.createElement("img");
-    die4.src="../images/die4.png";
+    die4.src="images/die4.png";
 
     const die5 = document.createElement("img");
-    die5.src="../images/die5.png";
+    die5.src="images/die5.png";
 
     const die6 = document.createElement("img");
-    die6.src="../images/die6.png";
+    die6.src="images/die6.png";
 
     const diceImages = [die1, die2, die3, die4, die5, die6];
 
