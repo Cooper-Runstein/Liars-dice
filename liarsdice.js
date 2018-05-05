@@ -1,7 +1,7 @@
 const main = () => {
 
 //###########Document buttons and displays##############
-//displays
+    //displays
     let currentHandDisplay = document.querySelector("#currentHand");
     let currentPlayerDisplay = document.querySelector("#playerDisplay");
     let playerOptionsDisplay = document.querySelector("#playerOptions");
@@ -13,7 +13,7 @@ const main = () => {
     let inputs = document.querySelector("#inputs");
     let betDisplay = document.querySelector("#betDisplay");
 
-//Buttons
+    //Buttons
     const startButton = document.querySelector("button");
     const nextPlayerButton = document.querySelector("#nextPlayer");
     const bluffButton = document.querySelector("#bluff");
@@ -27,8 +27,28 @@ const main = () => {
     const submit = document.getElementById("submit");
     const playersInput = document.getElementById("getPlayers");
 
+    //Images
+    const die1 = document.createElement("img");
+    die1.src="../images/die1.png";
 
-//Button Listeners
+    const die2 = document.createElement("img");
+    die2.src="../images/die2.png";
+
+    const die3 = document.createElement("img");
+    die3.src="../images/die3.png";
+
+    const die4 = document.createElement("img");
+    die4.src="../images/die4.png";
+
+    const die5 = document.createElement("img");
+    die5.src="../images/die5.png";
+
+    const die6 = document.createElement("img");
+    die6.src="../images/die6.png";
+
+    const diceImages = [die1, die2, die3, die4, die5, die6];
+
+    //Button Listeners
     startButton.addEventListener('click', () => {
         displayAndHide([submit, playersInput, nameInput], [startButton]);
     });
@@ -83,24 +103,22 @@ const main = () => {
         displayAndHide([nextPlayerButton], [passButton, bluffButton, spotOnButton]);
     });
 
-//TESTING AREA
     spotOnButton.addEventListener('click', () => {
         console.log('SpotOn called');
         challenger = table[0];
         challenged = currentPlayer;
+        let loser;
         if(checkSpotOn()){
             result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
+           loser = challenged;
         }else{
             result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
+            loser = challenger;
         }
+        checkIfEliminated(loser);
         displayElements([result, nextRoundButton]);
         endRound();
     });
-
-    const checkSpotOn = () =>{
-        return (diceOnTableIndexedArray[lastBet[0] -1] === lastBet[1])
-    };
-
 
    let names = [
         "Shirleen", "Kara", "Cleveland","Merri", "Conception", "Haley", "Florance", "Dorie", "Luella", "Vernia",
@@ -108,13 +126,13 @@ const main = () => {
         "Brant", "Valda", "Viki", "Asuncion", "Moira", "Kaycee", "Richelle", "Elicia", "Eneida", "Evelynn"
     ];
 
-// ###############OBJECTS AT TABLE##############
+    //OBJECTS
     class Player{
         constructor(name)
         {
             this.player = false;
             this.name = name || getRandomName();
-            this.hand = [0, 0, 0, 0, 0];
+            this.hand = [0, 0];
             this.roll = () => {
                 for (let i = 0; i < this.hand.length; i++) {
                     this.hand[i] = Math.floor(Math.random() * 6) + 1;
@@ -196,6 +214,22 @@ const main = () => {
         hideElements(arrayDelete);
     };
 
+    const convertToDiceImages = hand =>{
+        let imgHand = [];
+        for (let i = 0; i < hand.length; i++){
+            let face = hand[i];
+            let diceImage = diceImages[face-1].cloneNode();
+            imgHand.push(diceImage);
+        }
+        return imgHand;
+    };
+
+    const displayDiceImages = (parentNode, handImages) =>{
+        for (let i = 0; i < handImages.length; i++){
+            parentNode.appendChild(handImages[i])
+        }
+    };
+
 
 //#############Game Functions###################
 
@@ -234,7 +268,7 @@ const main = () => {
         }
     };
 
-//Player set up
+    //Player set up
     const setUpNextPlayer = () => {
        getNextPlayer();
        displayElements([currentPlayerDisplay, currentHandDisplay]);
@@ -245,9 +279,11 @@ const main = () => {
         }
     };
 
+
     const setUpHumanTurn = ()=>{
         currentHandDisplay.innerHTML = `<h1 class="text-align">${currentHand}</h1>`;
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
+        displayDiceImages(currentHandDisplay, convertToDiceImages(currentHand));
         displayAndHide([declareDisplay, declareButton, inputs], [spotOnButton, bluffButton, betDisplay, faceDisplay]);
     };
 
@@ -434,9 +470,15 @@ const main = () => {
 
     };
 
+    const checkSpotOn = () =>{
+        return (diceOnTableIndexedArray[lastBet[0] -1] === lastBet[1])
+    };
+
     const checkIfEliminated = (betLoser)=>{
         if (returnIfLastDie(betLoser)){
-            handleLastDieLost(betLoser);}
+            handleLastDieLost(betLoser);
+            checkForWinner();
+        }
     };
 
     const removeDie = (player) =>{
@@ -491,8 +533,20 @@ const main = () => {
     };
 
     const handleLastDieLost = player =>{
+        console.log(`Handling last dice of ${player.name}`);
         let index = table.indexOf(player);
-        table = table.splice(index, 1);
+        console.log(index);
+        console.log(table[index]);
+        delete table[index];
+        console.log(table);
+        test2.innerHTML = `${player.name} has been eliminated`
+    };
+
+
+    const checkForWinner = ()=>{
+        if (table.length = 1){
+            result.innerHTML = "Game has been won"
+        }
     };
 
 //Game Start Functions
