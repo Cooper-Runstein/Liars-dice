@@ -574,7 +574,7 @@ const main = () => {
 
 
     const checkForWinner = ()=>{
-        if (table.length = 1){
+        if (table.length === 1){
             console.log('########GAME OVER###########');
             result.innerHTML = "YOU WIN";
             displayElements([gameOver]);
