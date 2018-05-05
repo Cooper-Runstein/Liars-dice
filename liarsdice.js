@@ -12,6 +12,8 @@ const main = () => {
     let result = document.querySelector("#result");
     let inputs = document.querySelector("#inputs");
     let betDisplay = document.querySelector("#betDisplay");
+    let gameOver = document.querySelector("#gameOver");
+    const atTable = document.querySelector("#players");
 
     //Buttons
     const startButton = document.querySelector("button");
@@ -71,6 +73,7 @@ const main = () => {
 
     nextPlayerButton.addEventListener('click', () => {
         hideElements([nextPlayerButton]);
+        clearImages(currentHandDisplay);
         readyNextPlayer();
         returnNewPlayerNumber();
     });
@@ -115,6 +118,7 @@ const main = () => {
             result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
             loser = challenger;
         }
+        removeDie(loser);
         checkIfEliminated(loser);
         displayElements([result, nextRoundButton]);
         endRound();
@@ -132,7 +136,7 @@ const main = () => {
         {
             this.player = false;
             this.name = name || getRandomName();
-            this.hand = [0, 0];
+            this.hand = [0,0,0,0];
             this.roll = () => {
                 for (let i = 0; i < this.hand.length; i++) {
                     this.hand[i] = Math.floor(Math.random() * 6) + 1;
@@ -226,7 +230,13 @@ const main = () => {
 
     const displayDiceImages = (parentNode, handImages) =>{
         for (let i = 0; i < handImages.length; i++){
-            parentNode.appendChild(handImages[i])
+            parentNode.appendChild(handImages[i]);
+        }
+    };
+
+    const clearImages = parentNode =>{
+        while (parentNode.firstChild) {
+            parentNode.removeChild(parentNode.firstChild);
         }
     };
 
@@ -279,26 +289,34 @@ const main = () => {
         }
     };
 
-
     const setUpHumanTurn = ()=>{
-        currentHandDisplay.innerHTML = `<h1 class="text-align">${currentHand}</h1>`;
+        currentHandDisplay.innerHTML = `<h1 class="text-align"> Your Hand is: </h1>`;
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
+        displayLastBet();
         displayDiceImages(currentHandDisplay, convertToDiceImages(currentHand));
         displayAndHide([declareDisplay, declareButton, inputs], [spotOnButton, bluffButton, betDisplay, faceDisplay]);
     };
 
+    const displayLastBet = ()=> {
+        if (lastBet[0] !== 0) {
+            test.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
+            displayDiceImages(test, convertToDiceImages([lastBet[0]]))
+        }
+    };
+
     const setUpAiTurn = ()=>{
-        displayElements([spotOnButton, bluffButton, passButton, result]);
+        displayAndHide([spotOnButton, bluffButton, passButton, result, test], [currentHandDisplay]);
         result.innerHTML = "";
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name} is playing</h1>`;
-        currentHandDisplay.innerHTML = `Your hand is: ${table[0].hand}`;
+        test.innerHTML = `Your hand is:`;
+        displayDiceImages(test, convertToDiceImages(table[0].hand));
         lastBet = aiPlays();
-        test2.innerHTML=`Last Bet: ${lastBet}`;
         runAiAgainstAi();
     };
 
     const runAiAgainstAi = ()=>{
         let challengers = getChallengers(lastBet[0], false);
+        console.log(challengers);
         if (challengers.length > 0){
             challenger = getOpponent(challengers);
             challenged = currentPlayer;
@@ -340,11 +358,19 @@ const main = () => {
             table[x].roll();
             table[x].addOccurrences();
         }
-        test2.innerHTML = `Your hand is: ${table[0].hand}. You have ${table[0].hand.length} dice left.`;
         returnNewPlayerNumber();
         currentPlayer = table[PlayerNumber];
+        displayPlayers();
         console.log(`startNextRound function exited`);
 
+    };
+
+    const displayPlayers = ()=>{
+        let html = `<h3>PLayers</h3>`;
+        for (let i =0; i<table.length; i++){
+            html += `${table[i].name} - Dice Left: ${table[i].hand.length} <br>`
+        }
+        atTable.innerHTML = html;
     };
 
     const endRound = () => {
@@ -365,15 +391,7 @@ const main = () => {
         hideElements([result]);
     };
 
-//GAME PLAY FUNCTION
-    const testHandsFunction = () =>{
-        console.log("##########TEST FUNCTION##########");
-        for (let i =0; i < table.length; i++){
-            console.log(table[i].hand );
-        }
-        console.log(diceOnTableIndexedArray);
-    };
-
+    //GAME PLAY FUNCTIONS
     const getBetTruth = () => {
         let face = lastBet[0];
         let count = lastBet[1];
@@ -386,7 +404,6 @@ const main = () => {
         if (bet !== false) {
             lastBet = bet;
             displayAndHide([result, faceDisplay], [declareDisplay, declareButton, inputs]);
-            test2.innerHTML = `<p class="display-5 text-info">Last Bet: ${lastBet}</p>`;
             return true;
         } else {
             test2.innerHTML = `<p class="display-5 text-info">Not Valid Input</p>`;
@@ -424,11 +441,16 @@ const main = () => {
             }
         }
         console.log(`Possible Challengers: ${challengers}`);
+        if (Math.random() > .3){
         return challengers;
+        }
+
+        return [];
     };
 
     const getOpponent = (challengers)=>{
         let index = Math.floor(Math.random() * Math.floor(challengers.length));
+
         console.log(challengers[index]);
         return challengers[index]
     };
@@ -490,7 +512,9 @@ const main = () => {
         let newBet = playerBet();
         betCount = newBet[1];
         displayElements([betDisplay]);
-        betDisplay.innerHTML = `${currentPlayer.name} bets ${newBet}`;
+        betDisplay.innerHTML = `<p class="display-4">${currentPlayer.name} bets there are <br> ${newBet[1]} <span id="dice"> </span>s on the table</p>`;
+        let dieDisplay = document.getElementById("dice");
+        displayDiceImages(dieDisplay, convertToDiceImages([newBet[0]]));
         return newBet;
     };
 
@@ -537,20 +561,28 @@ const main = () => {
         let index = table.indexOf(player);
         console.log(index);
         console.log(table[index]);
-        delete table[index];
+        if (table[index].player === true){
+            displayElements([gameOver]);
+            gameOver.innerHTML="YOU LOSE"
+        }else{
+            test2.innerHTML = `<h1 class="text-warning">${player.name} has been eliminated</h1>`;
+            table.splice(index, 1);
+        }
         console.log(table);
-        test2.innerHTML = `${player.name} has been eliminated`
+
     };
 
 
     const checkForWinner = ()=>{
         if (table.length = 1){
-            result.innerHTML = "Game has been won"
+            console.log('########GAME OVER###########');
+            result.innerHTML = "YOU WIN";
+            displayElements([gameOver]);
         }
     };
 
 //Game Start Functions
-    let cleanBoard = () => hideElements([submit, nameInput, playersInput, bluffButton,spotOnButton,passButton,nextRoundButton,nextPlayerButton,faceDisplay,playerOptionsDisplay, declareButton, declareDisplay, inputs, result, betDisplay]);
+    let cleanBoard = () => hideElements([submit, nameInput, playersInput, bluffButton,spotOnButton,passButton,nextRoundButton,nextPlayerButton,faceDisplay,playerOptionsDisplay, declareButton, declareDisplay, inputs, result, betDisplay, gameOver]);
     let game = (initialValues) => {
         startGame(initialValues);
         startNextRound();
