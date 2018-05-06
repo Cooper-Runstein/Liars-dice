@@ -79,7 +79,7 @@ const main = () => {
     });
 
     nextRoundButton.addEventListener('click', () => {
-        hideElements([nextRoundButton, test]);
+        hideElements([nextRoundButton, test, test2]);
         resetRoundVariables();
         displayRound();
         startNextRound();
@@ -290,6 +290,8 @@ const main = () => {
     };
 
     const setUpHumanTurn = ()=>{
+        test2.innerHTML = "";
+        displayElements([test2]);
         currentHandDisplay.innerHTML = `<h1 class="text-align"> Your Hand is: </h1>`;
         currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
         displayLastBet();
@@ -345,7 +347,7 @@ const main = () => {
     };
 
     const returnNewPlayerNumber = () => {
-        if (PlayerNumber === table.length || PlayerNumber === undefined) {
+        if (PlayerNumber >= table.length || PlayerNumber === undefined) {
             PlayerNumber = 0;
         } else if (PlayerNumber < 0) {
             PlayerNumber = table.length - 1;
@@ -403,7 +405,7 @@ const main = () => {
         let bet = getBetIfValid(face, count);
         if (bet !== false) {
             lastBet = bet;
-            displayAndHide([result, faceDisplay], [declareDisplay, declareButton, inputs]);
+            displayAndHide([faceDisplay], [declareDisplay, declareButton, inputs]);
             return true;
         } else {
             test2.innerHTML = `<p class="display-5 text-info">Not Valid Input</p>`;
@@ -464,12 +466,14 @@ const main = () => {
     };
 
     const determineChallengeResult = () =>{
+        console.log("determining challenges");
         displayAndHide([nextRoundButton, result], [nextPlayerButton]);
         handleChallengeCheck(getBetTruth());
 
     };
 
     const handleChallengeCheck = (betBoolean)=>{
+        console.log("handle challenge function called");
         if(betBoolean){
             let color = getMessageColor(challenger,challenged);
             result.innerHTML = `<div class = "${color} display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`;
@@ -565,13 +569,12 @@ const main = () => {
             displayElements([gameOver]);
             gameOver.innerHTML="YOU LOSE"
         }else{
+            displayElements([test2]);
             test2.innerHTML = `<h1 class="text-warning">${player.name} has been eliminated</h1>`;
             table.splice(index, 1);
         }
         console.log(table);
-
     };
-
 
     const checkForWinner = ()=>{
         if (table.length === 1){

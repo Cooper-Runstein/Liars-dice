@@ -18,19 +18,19 @@
     <div id="playerOptions" class="row container-fluid justify-content-center" style="display: none">
     </div><div id="declareDisplay" class=" row" >Select Your Declared Hand</div>
     <div id="faceDisplay" class="row"></div>
-    <div id="inputs" class="row"><input type="text" placeholder="Face" id = "face"><input type="text" placeholder="Count" id="count"></div>
+    <div id="inputs" class="row"><input type="text" placeholder="Number of Dice" id="count"><input type="text" placeholder="Die Face Value" id = "face"></div>
     <div id="result" class="row"></div>
 
     <div id = "options" class="btn-group-vertical row justify-content-center" role="group" aria-label="Basic example">
         <button id="bluff" type="button" class="btn btn-danger btn-block">CALL BLUFF</button>
-        <button id="declare" type="button" class="btn btn-info btn-block">Declare Hand</button>
+        <button id="declare" type="button" class="btn btn-info btn-block">Declare Your Bet</button>
         <button id="spotOn" type="button" class="btn btn-warning btn-block">SPOT ON</button>
         <button id="pass" type="button" class="btn btn-success btn-block">PASS</button>
         <button id="nextRound" type="button" class="btn btn-primary btn-block">NEXT ROUND</button>
         <button id="nextPlayer" type="button" class="btn btn-success btn-block">Next Player</button>
     </div>
     <input id="getName" placeholder="  Input your name">
-    <input id="getPlayers" placeholder="  How many players">
+    <input id="getPlayers" placeholder="  Pick your opponents (1-9)">
     <button id="submit">Submit</button>
     <div id = 'test'></div>
     <div id = 'test2'></div>
@@ -47,13 +47,17 @@
 <div class="container-fluid bg-light border border-primary">
         <h2> Game Instructions</h2>
         <ul>
-            <li> You are the first player.</li>
+            <li> Name yourself, and pick the number of opponents between 1 and 9.</li>
+            <li> You play first.</li>
             <li> Your hand is displayed below your player name.</li>
-            <li> You are betting on the number of dice on the table.</li>
-            <li> After the initial bet, each player must either raise the bet count, or, keep the count, but raise the face.</li>
-            <li> You may call bluff on other players, and they may do so to you.</li>
-            <li> You may also call spot on if you think they are exactly correct.</li>
+            <li> You place a FACE VALUE bet (between 1-6, the faces of a die)</li>
+            <li> You also place a NUMBER bet, representing how many dice with your face value are on the table.</li>
+            <li> After the initial bet, each player must either raise the number of dice in their bet, or, keep the previous number, but raise the face value (i.e. from 4 4's to 4 6's).</li>
+            <li> You may call bluff on other players if you think there are less dice then they claim on the table, and they may do so to you.</li>
+            <li> You may also call spot on if you think their bet was exactly right.</li>
             <li> If you don't think the opposing player is bluffing or spot on, you can pass and have the next player play.</li>
+            <li> When a player is challenged (called out as bluffing or spot on), the challenger looses a die if the better was correct, or the better looses a die if they were right.</li>
+            <li> After every challenge, the round restarts with one less die in the losers hand, the last player with dice in their hand wins.</li>
         </ul>
 </div>
 
