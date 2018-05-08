@@ -138,9 +138,9 @@ const main = () => {
             this.name = name || getRandomName();
             this.hand = [0,0,0,0];
             this.roll = () => {
-                for (let i = 0; i < this.hand.length; i++) {
-                    this.hand[i] = Math.floor(Math.random() * 6) + 1;
-                }
+                this.hand = this.hand.map(
+                    () => (Math.floor(Math.random() * 6) + 1)
+                );
                 console.log(`${this.name} has rolled`);
             };
             this.addToTable = () => {
