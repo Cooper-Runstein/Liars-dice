@@ -38,21 +38,7 @@ let page = {
     nameInput : document.getElementById('getName'),
     submit : document.getElementById("submit"),
     playersInput : document.getElementById("getPlayers"),
-    die1 : document.createElement("img"),
-    die2 : document.createElement("img"),
-    die3 : document.createElement("img"),
-    die4 : document.createElement("img"),
-    die5 : document.createElement("img"),
-    die6 : document.createElement("img"),
-    diceImages : [this.die1, this.die2, this.die3, this.die4, this.die5, this.die6]
 };
-
-page.die1.src = "images/die1.png";
-page.die2.src = "images/die2.png";
-page.die3.src = "images/die3.png";
-page.die4.src = "images/die4.png";
-page.die5.src = "images/die5.png";
-page.die6.src = "images/die6.png";
 
 //Button Listeners
 function eventListeners(){
@@ -481,7 +467,7 @@ const aiPlays = ()=> {
     betCount = newBet[1];
     displayElements([page.betDisplay]);
     page.betDisplay.innerHTML = `<p class="display-4">${currentPlayer.name} bets there are <br> ${newBet[1]} <span id="dice"> </span>s on the table</p>`;
-    displayDiceImages(page.dieDisplay, convertToDiceImages([newBet[0]]));
+    displayDiceImages(page.betDisplay, convertToDiceImages([newBet[0]]));
     return newBet;
 };
 
@@ -560,4 +546,6 @@ cleanBoard();
 eventListeners();
 
 module.exports.page = page;
+
+
 
