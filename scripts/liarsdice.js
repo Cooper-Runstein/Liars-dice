@@ -1,8 +1,10 @@
 //########### IMPORTS ##########
+//DISPLAY
 const display = require('./display.js');
 const displayElements = display.displayElements;
 const hideElements = display.hideElements;
-const displayAndHide = display.displayAndHide();
+const displayAndHide = display.displayAndHide;
+const getMessageColor = display.getMessageColor;
 
 
 //###########Document buttons and displays##############
@@ -476,14 +478,7 @@ const handleChallengeCheck = (betBoolean)=>{
     }
 };
 
-const getMessageColor = (loser, winner) =>{
-    if (loser.player === true){
-        return "text-danger";
-    }else if(winner.player === true){
-        return "text-success";
-    }return ""
 
-};
 
 const checkSpotOn = () =>{
     return (diceOnTableIndexedArray[lastBet[0] -1] === lastBet[1])
