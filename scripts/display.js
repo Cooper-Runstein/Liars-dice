@@ -1,4 +1,4 @@
-let main = require('./liarsdice.js');
+let main = require('./app.js');
 let page = main.page;
 
 
@@ -18,6 +18,7 @@ die6.src = "images/die6.png";
 
 let diceImages = [die1, die2, die3, die4, die5, die6];
 
+//##### Element NDisplay Functions  #####
 function displayElements(array){
     array.map(x => x.style.display = 'block');
 }
@@ -31,6 +32,7 @@ function displayAndHide(arrayAdd, arrayDelete) {
     hideElements(arrayDelete);
 }
 
+//##### Event Alter Display Functions #####
 function getMessageColor (loser, winner){
     if (loser.player === true){
         return "text-danger";
@@ -40,6 +42,12 @@ function getMessageColor (loser, winner){
 
 }
 
+function displayPlayers(table, page){
+    let html = `<h3>PLayers</h3>`;
+    table.map(x => html += `${x.name} - Dice Left: ${x.hand.length} <br>`);
+    page.atTable.innerHTML = html;
+}
+
 function displayLastBet(lastBet) {
     if (lastBet[0] !== 0) {
         page.test.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
@@ -47,6 +55,7 @@ function displayLastBet(lastBet) {
     }
 }
 
+//##### Image Handlers #####
 function convertToDiceImages(hand){
     let imgHand = [];
     for (let i = 0; i < hand.length; i++){
@@ -62,7 +71,16 @@ function displayDiceImages(parentNode, handImages){
         parentNode.appendChild(handImages[i]);
     }
 }
+function clearImages(parentNode){
+    while (parentNode.firstChild) {
+        parentNode.removeChild(parentNode.firstChild);
+    }
+}
 
+
+
+
+//##### EXPORTS #####
 module.exports.displayElements = displayElements;
 module.exports.hideElements = hideElements;
 module.exports.displayAndHide = displayAndHide;
@@ -70,3 +88,5 @@ module.exports.getMessageColor = getMessageColor;
 module.exports.displayLastBet = displayLastBet;
 module.exports.convertToDiceImages = convertToDiceImages;
 module.exports.displayDiceImages = displayDiceImages;
+module.exports.clearImages = clearImages;
+module.exports.displayPlayers = displayPlayers;

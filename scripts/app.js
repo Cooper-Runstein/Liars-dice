@@ -1,6 +1,6 @@
 //########### IMPORTS ##########
 //DISPLAY
-const display = require('./display.js');
+let display = require('./display.js');
 const displayElements = display.displayElements;
 const hideElements = display.hideElements;
 const displayAndHide = display.displayAndHide;
@@ -8,6 +8,8 @@ const getMessageColor = display.getMessageColor;
 const displayLastBet = display.displayLastBet;
 const convertToDiceImages = display.convertToDiceImages;
 const displayDiceImages = display.displayDiceImages;
+const clearImages = display.clearImages;
+const displayPlayers = display.displayPlayers;
 
 
 //###########Document buttons and displays##############
@@ -193,16 +195,6 @@ let numberOfDie = 0;
 let challenger;
 let challenged;
 
-//generic functions
-
-
-const clearImages = parentNode =>{
-    while (parentNode.firstChild) {
-        parentNode.removeChild(parentNode.firstChild);
-    }
-};
-
-
 //#############Game Functions###################
 
 const startGame = (initialValues) => {
@@ -313,23 +305,15 @@ const returnNewPlayerNumber = () => {
 
 //NEW ROUND
 const startNextRound = () => {
-    for (let x = 0; x < table.length; x++) {
-        table[x].roll();
-        table[x].addOccurrences();
-    }
+    table.map(x => {
+        x.roll();
+        x.addOccurrences();
+    });
     returnNewPlayerNumber();
     currentPlayer = table[PlayerNumber];
-    displayPlayers();
+    displayPlayers(table, page);
     console.log(`startNextRound function exited`);
 
-};
-
-const displayPlayers = ()=>{
-    let html = `<h3>PLayers</h3>`;
-    for (let i =0; i<table.length; i++){
-        html += `${table[i].name} - Dice Left: ${table[i].hand.length} <br>`
-    }
-    page.atTable.innerHTML = html;
 };
 
 const endRound = () => {
