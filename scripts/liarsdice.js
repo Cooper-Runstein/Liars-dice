@@ -5,60 +5,56 @@ const displayElements = display.displayElements;
 const hideElements = display.hideElements;
 const displayAndHide = display.displayAndHide;
 const getMessageColor = display.getMessageColor;
+const displayLastBet = display.displayLastBet;
 
 
 //###########Document buttons and displays##############
 //displays
-let currentHandDisplay = document.querySelector("#currentHand");
-let currentPlayerDisplay = document.querySelector("#playerDisplay");
-let playerOptionsDisplay = document.querySelector("#playerOptions");
-let test = document.querySelector("#test");
-let test2 = document.querySelector("#test2");
-let declareDisplay = document.querySelector("#declareDisplay");
-let faceDisplay = document.querySelector("#faceDisplay");
-let result = document.querySelector("#result");
-let inputs = document.querySelector("#inputs");
-let betDisplay = document.querySelector("#betDisplay");
-let gameOver = document.querySelector("#gameOver");
-const atTable = document.querySelector("#players");
+let page = {
+    currentHandDisplay : document.querySelector("#currentHand"),
+    currentPlayerDisplay : document.querySelector("#playerDisplay"),
+    playerOptionsDisplay : document.querySelector("#playerOptions"),
+    test : document.querySelector("#test"),
+    test2 : document.querySelector("#test2"),
+    declareDisplay : document.querySelector("#declareDisplay"),
+    faceDisplay : document.querySelector("#faceDisplay"),
+    result : document.querySelector("#result"),
+    inputs : document.querySelector("#inputs"),
+    betDisplay : document.querySelector("#betDisplay"),
+    gameOver : document.querySelector("#gameOver"),
+    atTable : document.querySelector("#players"),
 
-//Buttons
-const startButton = document.querySelector("button");
-const nextPlayerButton = document.querySelector("#nextPlayer");
-const bluffButton = document.querySelector("#bluff");
-const spotOnButton = document.querySelector("#spotOn");
-const declareButton = document.querySelector("#declare");
-const nextRoundButton = document.querySelector("#nextRound");
-const faceInput = document.getElementById('face');
-const countInput = document.getElementById('count');
-const passButton = document.getElementById('pass');
-const nameInput = document.getElementById('getName');
-const submit = document.getElementById("submit");
-const playersInput = document.getElementById("getPlayers");
+    //Buttons
+    startButton : document.querySelector("button"),
+    nextPlayerButton : document.querySelector("#nextPlayer"),
+    bluffButton : document.querySelector("#bluff"),
+    spotOnButton : document.querySelector("#spotOn"),
+    declareButton : document.querySelector("#declare"),
+    nextRoundButton : document.querySelector("#nextRound"),
+    faceInput : document.getElementById('face'),
+    countInput : document.getElementById('count'),
+    passButton : document.getElementById('pass'),
+    nameInput : document.getElementById('getName'),
+    submit : document.getElementById("submit"),
+    playersInput : document.getElementById("getPlayers"),
+    die1 :document.createElement("img"),
+    die2 :document.createElement("img"),
+    die3 :document.createElement("img"),
+    die4 :document.createElement("img"),
+    die5 :document.createElement("img"),
+    die6 :document.createElement("img"),
+    diceImages : [this.die1.bind, this.die2.bind, this.die3.bind, this.die4.bind, this.die5.bind, this.die6.bind]
+};
 
-//Images
-const die1 = document.createElement("img");
-die1.src="images/die1.png";
-
-const die2 = document.createElement("img");
-die2.src="images/die2.png";
-
-const die3 = document.createElement("img");
-die3.src="images/die3.png";
-
-const die4 = document.createElement("img");
-die4.src="images/die4.png";
-
-const die5 = document.createElement("img");
-die5.src="images/die5.png";
-
-const die6 = document.createElement("img");
-die6.src="images/die6.png";
-
-const diceImages = [die1, die2, die3, die4, die5, die6];
+page.die1.src = "images/die1.png";
+page.die2.src = "images/die2.png";
+page.die3.src = "images/die3.png";
+page.die4.src = "images/die4.png";
+page.die5.src = "images/die5.png";
+page.die6.src = "images/die6.png";
 
 //Button Listeners
-startButton.addEventListener('click', () => {
+page.startButton.addEventListener('click', () => {
     displayAndHide([submit, playersInput, nameInput], [startButton]);
 });
 
@@ -70,7 +66,7 @@ submit.addEventListener('click', ()=>{
     }
 });
 
-bluffButton.addEventListener('click', () => {
+page.bluffButton.addEventListener('click', () => {
     challenger = table[0];
     challenged = currentPlayer;
     displayChallengeStatus(true);
@@ -78,25 +74,25 @@ bluffButton.addEventListener('click', () => {
     endRound();
 });
 
-nextPlayerButton.addEventListener('click', () => {
-    hideElements([nextPlayerButton]);
-    clearImages(currentHandDisplay);
+page.nextPlayerButton.addEventListener('click', () => {
+    hideElements([page.nextPlayerButton]);
+    clearImages(page.currentHandDisplay);
     readyNextPlayer();
     returnNewPlayerNumber();
 });
 
-nextRoundButton.addEventListener('click', () => {
-    hideElements([nextRoundButton, test, test2]);
+page.nextRoundButton.addEventListener('click', () => {
+    hideElements([page.nextRoundButton, test, test2]);
     resetRoundVariables();
     displayRound();
     startNextRound();
     firstPlayer();
 });
 
-declareButton.addEventListener('click', () => {
-    if(processBetValidity(faceInput.value, countInput.value)) {
+page.declareButton.addEventListener('click', () => {
+    if(processBetValidity(page.faceInput.value, page.countInput.value)) {
         console.log("declarebutton validated");
-        let challengers = getChallengers(faceInput.value, true);
+        let challengers = getChallengers(page.faceInput.value, true);
         if (challengers.length > 0){
              challenger = getOpponent(challengers);
              challenged = table[0];
@@ -104,30 +100,30 @@ declareButton.addEventListener('click', () => {
              determineChallengeResult();
          }else{
             displayChallengeStatus(false);
-            displayElements([nextPlayerButton]);
+            displayElements([page.nextPlayerButton]);
         }
  }
 });
 
-passButton.addEventListener('click', ()=>{
-    displayAndHide([nextPlayerButton], [passButton, bluffButton, spotOnButton]);
+page.passButton.addEventListener('click', ()=>{
+    displayAndHide([page.nextPlayerButton], [page.passButton, page.bluffButton, page.spotOnButton]);
 });
 
-spotOnButton.addEventListener('click', () => {
+page.spotOnButton.addEventListener('click', () => {
     console.log('SpotOn called');
     challenger = table[0];
     challenged = currentPlayer;
     let loser;
     if(checkSpotOn()){
-        result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
+        page.result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
        loser = challenged;
     }else{
-        result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
+        page.result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
         loser = challenger;
     }
     removeDie(loser);
     checkIfEliminated(loser);
-    displayElements([result, nextRoundButton]);
+    displayElements([page.result, page.nextRoundButton]);
     endRound();
 });
 
@@ -290,12 +286,7 @@ const setUpHumanTurn = ()=>{
     displayAndHide([declareDisplay, declareButton, inputs], [spotOnButton, bluffButton, betDisplay, faceDisplay]);
 };
 
-const displayLastBet = ()=> {
-    if (lastBet[0] !== 0) {
-        test.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
-        displayDiceImages(test, convertToDiceImages([lastBet[0]]))
-    }
-};
+
 
 const setUpAiTurn = ()=>{
     displayAndHide([spotOnButton, bluffButton, passButton, result, test], [currentHandDisplay]);
