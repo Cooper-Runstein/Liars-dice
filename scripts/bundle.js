@@ -1,43 +1,59 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-require('./liarsdice.js');
+let main = require('./liarsdice.js');
+let page = main.page;
 
-displayElements = function(array){
-    for (let element = 0; element < array.length; element++){
-        array[element].style.display = 'block';}
-};
+function displayElements(array){
+    array.map(x => x.style.display = 'block');
+}
 
-hideElements = function(array){
-    for (let element = 0; element < array.length; element++){
-        array[element].style.display = 'none';
-    }
-};
+function hideElements(array){
+    array.map(x => x.style.display = 'none');
+}
 
-const displayAndHide = (arrayAdd, arrayDelete)=>{
+function displayAndHide(arrayAdd, arrayDelete) {
     displayElements(arrayAdd);
     hideElements(arrayDelete);
-};
+}
 
-const getMessageColor = (loser, winner) =>{
+function getMessageColor (loser, winner){
     if (loser.player === true){
         return "text-danger";
     }else if(winner.player === true){
         return "text-success";
     }return ""
 
-};
+}
 
-const displayLastBet = ()=> {
+function displayLastBet(lastBet) {
     if (lastBet[0] !== 0) {
-        test.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
+        page.test.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
         displayDiceImages(test, convertToDiceImages([lastBet[0]]))
     }
-};
+}
+
+function convertToDiceImages(hand){
+    let imgHand = [];
+    for (let i = 0; i < hand.length; i++){
+        let face = hand[i];
+        let diceImage = page.diceImages[face-1].cloneNode();
+        imgHand.push(diceImage);
+    }
+    return imgHand;
+}
+
+function displayDiceImages(parentNode, handImages){
+    for (let i = 0; i < handImages.length; i++){
+        parentNode.appendChild(handImages[i]);
+    }
+}
 
 module.exports.displayElements = displayElements;
 module.exports.hideElements = hideElements;
 module.exports.displayAndHide = displayAndHide;
 module.exports.getMessageColor = getMessageColor;
 module.exports.displayLastBet = displayLastBet;
+module.exports.convertToDiceImages = convertToDiceImages;
+module.exports.displayDiceImages = displayDiceImages;
 },{"./liarsdice.js":2}],2:[function(require,module,exports){
 //########### IMPORTS ##########
 //DISPLAY
@@ -47,6 +63,8 @@ const hideElements = display.hideElements;
 const displayAndHide = display.displayAndHide;
 const getMessageColor = display.getMessageColor;
 const displayLastBet = display.displayLastBet;
+const convertToDiceImages = display.convertToDiceImages;
+const displayDiceImages = display.displayDiceImages;
 
 
 //###########Document buttons and displays##############
@@ -55,17 +73,16 @@ let page = {
     currentHandDisplay : document.querySelector("#currentHand"),
     currentPlayerDisplay : document.querySelector("#playerDisplay"),
     playerOptionsDisplay : document.querySelector("#playerOptions"),
-    test : document.querySelector("#page.test"),
-    test2 : document.querySelector("#page.test2"),
-    declareDisplay : document.querySelector("#page.declareDisplay"),
-    faceDisplay : document.querySelector("#page.faceDisplay"),
-    result : document.querySelector("#page.result"),
-    inputs : document.querySelector("#page.inputs"),
+    test : document.querySelector("#test"),
+    test2 : document.querySelector("#test2"),
+    declareDisplay : document.querySelector("#declareDisplay"),
+    faceDisplay : document.querySelector("#faceDisplay"),
+    result : document.querySelector("#result"),
+    inputs : document.querySelector("#inputs"),
     betDisplay : document.querySelector("#betDisplay"),
     gameOver : document.querySelector("#gameOver"),
     atTable : document.querySelector("#players"),
 
-    //Buttons
     startButton : document.querySelector("button"),
     nextPlayerButton : document.querySelector("#nextPlayer"),
     bluffButton : document.querySelector("#bluff"),
@@ -78,13 +95,13 @@ let page = {
     nameInput : document.getElementById('getName'),
     submit : document.getElementById("submit"),
     playersInput : document.getElementById("getPlayers"),
-    die1 :document.createElement("img"),
-    die2 :document.createElement("img"),
-    die3 :document.createElement("img"),
-    die4 :document.createElement("img"),
-    die5 :document.createElement("img"),
-    die6 :document.createElement("img"),
-    diceImages : [this.die1.bind, this.die2.bind, this.die3.bind, this.die4.bind, this.die5.bind, this.die6.bind]
+    die1 : document.createElement("img"),
+    die2 : document.createElement("img"),
+    die3 : document.createElement("img"),
+    die4 : document.createElement("img"),
+    die5 : document.createElement("img"),
+    die6 : document.createElement("img"),
+    diceImages : [this.die1, this.die2, this.die3, this.die4, this.die5, this.die6]
 };
 
 page.die1.src = "images/die1.png";
@@ -95,78 +112,80 @@ page.die5.src = "images/die5.png";
 page.die6.src = "images/die6.png";
 
 //Button Listeners
-page.startButton.addEventListener('click', () => {
-    displayAndHide([submit, page.playersInput, page.nameInput], [page.startButton]);
-});
+function eventListeners(){
+    page.startButton.addEventListener('click', () => {
+        displayAndHide([page.submit, page.playersInput, page.nameInput], [page.startButton]);
+    });
 
-page.submit.addEventListener('click', ()=>{
-    let gameInitialValues = getGameSettings();
-    if(gameInitialValues !== false){
-        game(gameInitialValues);}else{
-        console.log("false");
-    }
-});
-
-page.bluffButton.addEventListener('click', () => {
-    challenger = table[0];
-    challenged = currentPlayer;
-    displayChallengeStatus(true);
-    determineChallengeResult(true);
-    endRound();
-});
-
-page.nextPlayerButton.addEventListener('click', () => {
-    hideElements([page.nextPlayerButton]);
-    clearImages(page.currentHandDisplay);
-    readyNextPlayer();
-    returnNewPlayerNumber();
-});
-
-page.nextRoundButton.addEventListener('click', () => {
-    hideElements([page.nextRoundButton, page.test, page.test2]);
-    resetRoundVariables();
-    displayRound();
-    startNextRound();
-    firstPlayer();
-});
-
-page.declareButton.addEventListener('click', () => {
-    if(processBetValidity(page.faceInput.value, page.countInput.value)) {
-        console.log("declarebutton validated");
-        let challengers = getChallengers(page.faceInput.value, true);
-        if (challengers.length > 0){
-             challenger = getOpponent(challengers);
-             challenged = table[0];
-             displayChallengeStatus(true);
-             determineChallengeResult();
-         }else{
-            displayChallengeStatus(false);
-            displayElements([page.nextPlayerButton]);
+    page.submit.addEventListener('click', ()=>{
+        let gameInitialValues = getGameSettings();
+        if(gameInitialValues !== false){
+            game(gameInitialValues);}else{
+            console.log("false");
         }
- }
-});
+    });
 
-page.passButton.addEventListener('click', ()=>{
-    displayAndHide([page.nextPlayerButton], [page.passButton, page.bluffButton, page.spotOnButton]);
-});
+    page.bluffButton.addEventListener('click', () => {
+        challenger = table[0];
+        challenged = currentPlayer;
+        displayChallengeStatus(true);
+        determineChallengeResult(true);
+        endRound();
+    });
 
-page.spotOnButton.addEventListener('click', () => {
-    console.log('SpotOn called');
-    challenger = table[0];
-    challenged = currentPlayer;
-    let loser;
-    if(checkSpotOn()){
-        page.result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
-       loser = challenged;
-    }else{
-        page.result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
-        loser = challenger;
-    }
-    removeDie(loser);
-    checkIfEliminated(loser);
-    displayElements([page.result, page.nextRoundButton]);
-    endRound();
-});
+    page.nextPlayerButton.addEventListener('click', () => {
+        hideElements([page.nextPlayerButton]);
+        clearImages(page.currentHandDisplay);
+        readyNextPlayer();
+        returnNewPlayerNumber();
+    });
+
+    page.nextRoundButton.addEventListener('click', () => {
+        hideElements([page.nextRoundButton, page.test, page.test2]);
+        resetRoundVariables();
+        displayRound();
+        startNextRound();
+        firstPlayer();
+    });
+
+    page.declareButton.addEventListener('click', () => {
+        if(processBetValidity(page.faceInput.value, page.countInput.value)) {
+            console.log("declarebutton validated");
+            let challengers = getChallengers(page.faceInput.value, true);
+            if (challengers.length > 0){
+                 challenger = getOpponent(challengers);
+                 challenged = table[0];
+                 displayChallengeStatus(true);
+                 determineChallengeResult();
+             }else{
+                displayChallengeStatus(false);
+                displayElements([page.nextPlayerButton]);
+            }
+     }
+    });
+
+    page.passButton.addEventListener('click', ()=>{
+        displayAndHide([page.nextPlayerButton], [page.passButton, page.bluffButton, page.spotOnButton]);
+    });
+
+    page.spotOnButton.addEventListener('click', () => {
+        console.log('SpotOn called');
+        challenger = table[0];
+        challenged = currentPlayer;
+        let loser;
+        if(checkSpotOn()){
+            page.result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
+           loser = challenged;
+        }else{
+            page.result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
+            loser = challenger;
+        }
+        removeDie(loser);
+        checkIfEliminated(loser);
+        displayElements([page.result, page.nextRoundButton]);
+        endRound();
+    });
+}
 
 let names = [
     "Shirleen", "Kara", "Cleveland","Merri", "Conception", "Haley", "Florance", "Dorie", "Luella", "Vernia",
@@ -246,21 +265,7 @@ let challenger;
 let challenged;
 
 //generic functions
-const convertToDiceImages = hand => {
-    let imgHand = [];
-    for (let i = 0; i < hand.length; i++){
-        let face = hand[i];
-        let diceImage = page.diceImages[face-1].cloneNode();
-        imgHand.push(diceImage);
-    }
-    return imgHand;
-};
 
-const displayDiceImages = (parentNode, handImages) =>{
-    for (let i = 0; i < handImages.length; i++){
-        parentNode.appendChild(handImages[i]);
-    }
-};
 
 const clearImages = parentNode =>{
     while (parentNode.firstChild) {
@@ -287,7 +292,7 @@ const getGameSettings = ()=>{
     let name = page.nameInput.value;
     if (10 > page.playersInput.value > 0){
         let numPlayers = page.playersInput.value;
-        hideElements([submit, page.playersInput, page.nameInput]);
+        hideElements([page.submit, page.playersInput, page.nameInput]);
         return ([name, numPlayers]);
     }return false;
 };
@@ -322,7 +327,7 @@ const setUpHumanTurn = ()=>{
     displayElements([page.test2]);
     page.currentHandDisplay.innerHTML = `<h1 class="text-align"> Your Hand is: </h1>`;
     page.currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
-    displayLastBet();
+    displayLastBet(lastBet);
     displayDiceImages(page.currentHandDisplay, convertToDiceImages(currentHand));
     displayAndHide([page.declareDisplay, page.declareButton, page.inputs], [page.spotOnButton, page.bluffButton, page.betDisplay, page.faceDisplay]);
 };
@@ -533,8 +538,7 @@ const aiPlays = ()=> {
     betCount = newBet[1];
     displayElements([page.betDisplay]);
     page.betDisplay.innerHTML = `<p class="display-4">${currentPlayer.name} bets there are <br> ${newBet[1]} <span id="dice"> </span>s on the table</p>`;
-    let dieDisplay = document.getElementById("dice");
-    displayDiceImages(dieDisplay, convertToDiceImages([newBet[0]]));
+    displayDiceImages(page.dieDisplay, convertToDiceImages([newBet[0]]));
     return newBet;
 };
 
@@ -601,13 +605,18 @@ const checkForWinner = ()=>{
 };
 
 //Game Start Functions
-let cleanBoard = () => hideElements([submit, page.nameInput, page.playersInput, page.bluffButton, page.spotOnButton, page.passButton, page.nextRoundButton, page.nextPlayerButton,page.faceDisplay, page.playerOptionsDisplay, page.declareButton, page.declareDisplay, page.inputs, page.result, page.betDisplay, page.gameOver]);
+let cleanBoard = () => hideElements([page.submit, page.nameInput, page.playersInput, page.bluffButton, page.spotOnButton, page.passButton, page.nextRoundButton, page.nextPlayerButton, page.faceDisplay, page.playerOptionsDisplay, page.declareButton, page.declareDisplay, page.inputs, page.result, page.betDisplay, page.gameOver]);
+
 let game = (initialValues) => {
     startGame(initialValues);
     startNextRound();
     firstPlayer();
 };
+
 cleanBoard();
+eventListeners();
+
+module.exports.page = page;
 
 
 },{"./display.js":1}]},{},[2]);
