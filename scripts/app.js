@@ -1,4 +1,5 @@
 //########### IMPORTS ##########
+//######DISPLAY#########
 const display = require('./display.js');
 const {displayElements} = display;
 const {hideElements} = display;
@@ -6,6 +7,9 @@ const {displayAndHide} = display;
 const {convertToDiceImages} = display;
 const {displayDiceImages} = display;
 const {clearImages} = display;
+const {displayPlayers} = display;
+const {displayLastBet} = display;
+const {displayRound} = display;
 
 
 //###########Document buttons and displays##############
@@ -71,7 +75,7 @@ const eventListeners = ()=> {
     nextRoundButton.addEventListener('click', () => {
         hideElements([nextRoundButton, test, test2]);
         resetRoundVariables();
-        displayRound();
+        displayRound(result);
         startNextRound();
         firstPlayer();
     });
@@ -252,17 +256,11 @@ const setUpHumanTurn = ()=>{
     displayElements([test2]);
     currentHandDisplay.innerHTML = `<h1 class="text-align"> Your Hand is: </h1>`;
     currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
-    displayLastBet();
+    displayLastBet(lastBet, test);
     displayDiceImages(currentHandDisplay, convertToDiceImages(currentHand));
     displayAndHide([declareDisplay, declareButton, inputs], [spotOnButton, bluffButton, betDisplay, faceDisplay]);
 };
 
-const displayLastBet = ()=> {
-    if (lastBet[0] !== 0) {
-        test.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
-        displayDiceImages(test, convertToDiceImages([lastBet[0]]))
-    }
-};
 
 const setUpAiTurn = ()=>{
     displayAndHide([spotOnButton, bluffButton, passButton, result, test], [currentHandDisplay]);
@@ -320,18 +318,11 @@ const startNextRound = () => {
     }
     returnNewPlayerNumber();
     currentPlayer = table[PlayerNumber];
-    displayPlayers();
+    displayPlayers(atTable, table);
     console.log(`startNextRound function exited`);
 
 };
 
-const displayPlayers = ()=>{
-    let html = `<h3>PLayers</h3>`;
-    for (let i =0; i<table.length; i++){
-        html += `${table[i].name} - Dice Left: ${table[i].hand.length} <br>`
-    }
-    atTable.innerHTML = html;
-};
 
 const endRound = () => {
     resetRoundVariables();
@@ -347,9 +338,6 @@ const resetRoundVariables = () => {
     hideElements([passButton, bluffButton, spotOnButton, nextPlayerButton]);
 };
 
-const displayRound = () => {
-    hideElements([result]);
-};
 
 //GAME PLAY FUNCTIONS
 const getBetTruth = () => {

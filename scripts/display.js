@@ -66,9 +66,24 @@ const clearImages = parentNode =>{
 
 
 
+const displayPlayers = (element, table)=>{
+    let html = `<h3>PLayers</h3>`;
+    for (let i =0; i<table.length; i++){
+        html += `${table[i].name} - Dice Left: ${table[i].hand.length} <br>`
+    }
+    element.innerHTML = html;
+};
 
+const displayLastBet = (lastBet, element)=> {
+    if (lastBet[0] !== 0) {
+        element.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
+        displayDiceImages(element, convertToDiceImages([lastBet[0]]))
+    }
+};
 
-
+const displayRound = (result) => {
+    hideElements([result]);
+};
 
 
 
@@ -80,7 +95,10 @@ module.exports = {
     displayAndHide : displayAndHide,
     convertToDiceImages : convertToDiceImages,
     clearImages : clearImages,
-    displayDiceImages: displayDiceImages
+    displayDiceImages: displayDiceImages,
+    displayPlayers : displayPlayers,
+    displayLastBet : displayLastBet,
+    displayRound : displayRound,
 
 };
 
