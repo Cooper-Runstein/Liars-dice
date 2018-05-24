@@ -85,6 +85,14 @@ const displayRound = (result) => {
     hideElements([result]);
 };
 
+const displayChallengeStatus = (challenge, display, challenger) =>{
+    if (challenge){
+        display.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`;
+    }else{
+        display.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
+    }
+};
+
 
 
 // EXPORTS
@@ -99,6 +107,7 @@ module.exports = {
     displayPlayers : displayPlayers,
     displayLastBet : displayLastBet,
     displayRound : displayRound,
+    displayChallengeStatus : displayChallengeStatus,
 
 };
 

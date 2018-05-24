@@ -10,6 +10,7 @@ const {clearImages} = display;
 const {displayPlayers} = display;
 const {displayLastBet} = display;
 const {displayRound} = display;
+const {displayChallengeStatus} = display;
 
 
 //###########Document buttons and displays##############
@@ -60,7 +61,7 @@ const eventListeners = ()=> {
     bluffButton.addEventListener('click', () => {
         challenger = table[0];
         challenged = currentPlayer;
-        displayChallengeStatus(true);
+        displayChallengeStatus(true, faceDisplay, challenger);
         determineChallengeResult(true);
         endRound();
     });
@@ -87,10 +88,10 @@ const eventListeners = ()=> {
             if (challengers.length > 0){
                  challenger = getOpponent(challengers);
                  challenged = table[0];
-                 displayChallengeStatus(true);
+                 displayChallengeStatus(true, faceDisplay, challenger);
                  determineChallengeResult();
              }else{
-                displayChallengeStatus(false);
+                displayChallengeStatus(false, faceDisplay, challenger);
                 displayElements([nextPlayerButton]);
             }
      }
@@ -197,12 +198,6 @@ let numberOfDie = 0;
 let challenger;
 let challenged;
 
-//generic functions
-
-
-
-
-
 //#############Game Functions###################
 
 const startGame = (initialValues) => {
@@ -279,10 +274,10 @@ const runAiAgainstAi = ()=>{
         challenger = getOpponent(challengers);
         challenged = currentPlayer;
         hideElements([bluffButton, spotOnButton, passButton]);
-        displayChallengeStatus(true);
+        displayChallengeStatus(true, faceDisplay, challenger);
         determineChallengeResult();
     }else{
-        displayChallengeStatus(false);
+        displayChallengeStatus(false, faceDisplay, challenger);
     }
 };
 
@@ -323,7 +318,6 @@ const startNextRound = () => {
 
 };
 
-
 const endRound = () => {
     resetRoundVariables();
     test.innerHTML = "ROUND OVER";
@@ -357,7 +351,6 @@ const processBetValidity = (face, count) => {
         test2.innerHTML = `<p class="display-5 text-info">Not Valid Input</p>`;
     }
 };
-
 
 const getBetIfValid = (face, count) => {
     face = parseInt(face);
@@ -401,14 +394,6 @@ const getOpponent = (challengers)=>{
 
     console.log(challengers[index]);
     return challengers[index]
-};
-
-const displayChallengeStatus = (challenge) =>{
-    if (challenge){
-        faceDisplay.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`;
-    }else{
-        faceDisplay.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
-    }
 };
 
 const determineChallengeResult = () =>{
