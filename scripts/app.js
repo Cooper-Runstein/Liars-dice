@@ -1,8 +1,11 @@
 //########### IMPORTS ##########
 const display = require('./display.js');
-const displayElements = display.displayElements;
-const hideElements = display.hideElements;
-const displayAndHide = display.displayAndHide();
+const {displayElements} = display;
+const {hideElements} = display;
+const {displayAndHide} = display;
+const {convertToDiceImages} = display;
+const {displayDiceImages} = display;
+const {clearImages} = display;
 
 
 //###########Document buttons and displays##############
@@ -35,99 +38,83 @@ const submit = document.getElementById("submit");
 const playersInput = document.getElementById("getPlayers");
 
 //Images
-const die1 = document.createElement("img");
-die1.src="images/die1.png";
-
-const die2 = document.createElement("img");
-die2.src="images/die2.png";
-
-const die3 = document.createElement("img");
-die3.src="images/die3.png";
-
-const die4 = document.createElement("img");
-die4.src="images/die4.png";
-
-const die5 = document.createElement("img");
-die5.src="images/die5.png";
-
-const die6 = document.createElement("img");
-die6.src="images/die6.png";
-
-const diceImages = [die1, die2, die3, die4, die5, die6];
 
 //Button Listeners
-startButton.addEventListener('click', () => {
-    displayAndHide([submit, playersInput, nameInput], [startButton]);
-});
+const eventListeners = ()=> {
+    startButton.addEventListener('click', () => {
+        displayAndHide([submit, playersInput, nameInput], [startButton]);
+    });
 
-submit.addEventListener('click', ()=>{
-    let gameInitialValues = getGameSettings();
-    if(gameInitialValues !== false){
-        game(gameInitialValues);}else{
-        console.log("false");
-    }
-});
-
-bluffButton.addEventListener('click', () => {
-    challenger = table[0];
-    challenged = currentPlayer;
-    displayChallengeStatus(true);
-    determineChallengeResult(true);
-    endRound();
-});
-
-nextPlayerButton.addEventListener('click', () => {
-    hideElements([nextPlayerButton]);
-    clearImages(currentHandDisplay);
-    readyNextPlayer();
-    returnNewPlayerNumber();
-});
-
-nextRoundButton.addEventListener('click', () => {
-    hideElements([nextRoundButton, test, test2]);
-    resetRoundVariables();
-    displayRound();
-    startNextRound();
-    firstPlayer();
-});
-
-declareButton.addEventListener('click', () => {
-    if(processBetValidity(faceInput.value, countInput.value)) {
-        console.log("declarebutton validated");
-        let challengers = getChallengers(faceInput.value, true);
-        if (challengers.length > 0){
-             challenger = getOpponent(challengers);
-             challenged = table[0];
-             displayChallengeStatus(true);
-             determineChallengeResult();
-         }else{
-            displayChallengeStatus(false);
-            displayElements([nextPlayerButton]);
+    submit.addEventListener('click', ()=>{
+        let gameInitialValues = getGameSettings();
+        if(gameInitialValues !== false){
+            game(gameInitialValues);}else{
+            console.log("false");
         }
- }
-});
+    });
 
-passButton.addEventListener('click', ()=>{
-    displayAndHide([nextPlayerButton], [passButton, bluffButton, spotOnButton]);
-});
+    bluffButton.addEventListener('click', () => {
+        challenger = table[0];
+        challenged = currentPlayer;
+        displayChallengeStatus(true);
+        determineChallengeResult(true);
+        endRound();
+    });
 
-spotOnButton.addEventListener('click', () => {
-    console.log('SpotOn called');
-    challenger = table[0];
-    challenged = currentPlayer;
-    let loser;
-    if(checkSpotOn()){
-        result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
-       loser = challenged;
-    }else{
-        result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
-        loser = challenger;
-    }
-    removeDie(loser);
-    checkIfEliminated(loser);
-    displayElements([result, nextRoundButton]);
-    endRound();
-});
+    nextPlayerButton.addEventListener('click', () => {
+        hideElements([nextPlayerButton]);
+        clearImages(currentHandDisplay);
+        readyNextPlayer();
+        returnNewPlayerNumber();
+    });
+
+    nextRoundButton.addEventListener('click', () => {
+        hideElements([nextRoundButton, test, test2]);
+        resetRoundVariables();
+        displayRound();
+        startNextRound();
+        firstPlayer();
+    });
+
+    declareButton.addEventListener('click', () => {
+        if(processBetValidity(faceInput.value, countInput.value)) {
+            console.log("declarebutton validated");
+            let challengers = getChallengers(faceInput.value, true);
+            if (challengers.length > 0){
+                 challenger = getOpponent(challengers);
+                 challenged = table[0];
+                 displayChallengeStatus(true);
+                 determineChallengeResult();
+             }else{
+                displayChallengeStatus(false);
+                displayElements([nextPlayerButton]);
+            }
+     }
+    });
+
+    passButton.addEventListener('click', ()=>{
+        displayAndHide([nextPlayerButton], [passButton, bluffButton, spotOnButton]);
+    });
+
+    spotOnButton.addEventListener('click', () => {
+        console.log('SpotOn called');
+        challenger = table[0];
+        challenged = currentPlayer;
+        let loser;
+        if(checkSpotOn()){
+            result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
+           loser = challenged;
+        }else{
+            result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
+            loser = challenger;
+        }
+        removeDie(loser);
+        checkIfEliminated(loser);
+        displayElements([result, nextRoundButton]);
+        endRound();
+    });
+
+};
 
 let names = [
     "Shirleen", "Kara", "Cleveland","Merri", "Conception", "Haley", "Florance", "Dorie", "Luella", "Vernia",
@@ -207,27 +194,9 @@ let challenger;
 let challenged;
 
 //generic functions
-const convertToDiceImages = hand =>{
-    let imgHand = [];
-    for (let i = 0; i < hand.length; i++){
-        let face = hand[i];
-        let diceImage = diceImages[face-1].cloneNode();
-        imgHand.push(diceImage);
-    }
-    return imgHand;
-};
 
-const displayDiceImages = (parentNode, handImages) =>{
-    for (let i = 0; i < handImages.length; i++){
-        parentNode.appendChild(handImages[i]);
-    }
-};
 
-const clearImages = parentNode =>{
-    while (parentNode.firstChild) {
-        parentNode.removeChild(parentNode.firstChild);
-    }
-};
+
 
 
 //#############Game Functions###################
@@ -581,4 +550,5 @@ let game = (initialValues) => {
     firstPlayer();
 };
 cleanBoard();
+eventListeners();
 
