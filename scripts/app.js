@@ -55,7 +55,6 @@ const eventListeners = ()=> {
         let gameInitialValues = getGameSettings();
         if(gameInitialValues !== false){
             game(gameInitialValues);}else{
-            console.log("false");
         }
     });
 
@@ -108,10 +107,10 @@ const eventListeners = ()=> {
         challenged = currentPlayer;
         let loser;
         if(checkSpotOn()){
-            result.innerHTML = `<div class = "text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`;
+          setHTML(result, `<div class="text-warning display-4"> Spot On True -> ${challenged.name} loses a die </div>`);
            loser = challenged;
         }else{
-            result.innerHTML = `<div class = "text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`;
+            setHTML(result, `<div class="text-warning display-4"> Spot On False-> ${challenger.name} loses a die </div>`);
             loser = challenger;
         }
         removeDie(loser);
@@ -152,11 +151,8 @@ class Player{
         };
         this.returnTrueIfAIChallenges = (face, player) => {
             let playerNum = getFaceCount(this, face);
-            console.log(`face: ${face}`);
-            console.log(`playerNumberofFace: ${playerNum}`);
-            let pct = dieRatio(playerNum);
-            console.log(`return ratio: ${pct}`);
-            if (player === true){
+            let pct = dieRatio(playerNum); // get numerical probability of bet truthyness
+            if (player === true){ //increase challenge chance if human is betting
                 pct += (1/12);
             }
             if (pct <= (1 / 12)){
@@ -175,23 +171,20 @@ class Player{
         }
 }}
 
-let getFaceCount = (player, face)=>{
+let getFaceCount = (player, face)=>{ //counts individuals instances of a face
     let arr = countFaces(player.hand);
-    console.log(player.name + arr);
     return arr[face-1];
 };
 
-let dieRatio = (playerNum) => {
-    console.log("NUmber die on table" + numberOfDie);
-    console.log("BFO arr" + betCount);
+let dieRatio = (playerNum) => { //return prop of truthyness
     return (betCount-playerNum)/numberOfDie;
 };
 
 //Main Variables
-let table = [];
-let PlayerNumber;
-let currentHand;
-let currentPlayer;
+let table = []; //array to hold players
+let PlayerNumber; //current player index counter
+let currentHand; //active die hand
+let currentPlayer; // active player : table[PlayerNumber]
 let lastBet = [0, 0];
 let betCount = 0;
 let diceOnTableIndexedArray = [0,0,0,0,0,0];
@@ -204,8 +197,7 @@ let challenged;
 const startGame = (initialValues) => {
     createHumanPlayer(initialValues);
     createAiPlayers(initialValues[1]);
-    if (table[0] !== undefined) {
-        table[0].player = true;}
+    table[0].player = true;
 };
 
 const createHumanPlayer = (initialValues)=>{
@@ -260,9 +252,9 @@ const setUpHumanTurn = ()=>{
 
 const setUpAiTurn = ()=>{
     displayAndHide([spotOnButton, bluffButton, passButton, result, test], [currentHandDisplay]);
-    result.innerHTML = "";
-    currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name} is playing</h1>`;
-    test.innerHTML = `Your hand is:`;
+    setHtml("result", "");
+    setHTML(currentPlayerDisplay, `<h1 class="text-align">${currentPlayer.name} is playing</h1>`);
+    setHTML(test, `Your hand is:`);
     displayDiceImages(test, convertToDiceImages(table[0].hand));
     lastBet = aiPlays();
     runAiAgainstAi();
@@ -308,20 +300,19 @@ const returnNewPlayerNumber = () => {
 
 //NEW ROUND
 const startNextRound = () => {
-    for (let x = 0; x < table.length; x++) {
-        table[x].roll();
-        table[x].addOccurrences();
-    }
+  table.map(x =>{
+    x.roll();
+    x.addOccurrences();
+  })
     returnNewPlayerNumber();
     currentPlayer = table[PlayerNumber];
     displayPlayers(atTable, table);
-    console.log(`startNextRound function exited`);
 
 };
 
 const endRound = () => {
     resetRoundVariables();
-    test.innerHTML = "ROUND OVER";
+    setHTML(test, "ROUND OVER")
     PlayerNumber -= 1;
 };
 
@@ -329,7 +320,7 @@ const resetRoundVariables = () => {
     lastBet = [0,0];
     betCount = 0;
     numberOfDie = 0;
-    diceOnTableIndexedArray=[0,0,0,0,0,0];
+    diceOnTableIndexedArray = [0,0,0,0,0,0];
     hideElements([passButton, bluffButton, spotOnButton, nextPlayerButton]);
 };
 
@@ -358,7 +349,7 @@ const getBetIfValid = (face, count) => {
     count = parseInt(count);
     let lastFace = lastBet[0];
     let lastCount = lastBet[1];
-    console.log(`lastFace = ${lastBet[0]}, lastCount = ${lastBet[1]} face=${face}, count=${count}`);
+
     if (
         (   ((face > lastFace) && (count === lastCount)) &&
             ((count > 0) && (7 > face > 0))
@@ -372,7 +363,7 @@ const getBetIfValid = (face, count) => {
         return [face, count];
     }
     return false;
-};
+};//return if bet is valid
 
 const getChallengers = (face, player)=>{
     let challengers = [];
@@ -398,7 +389,6 @@ const getOpponent = (challengers)=>{
 };
 
 const determineChallengeResult = () =>{
-    console.log("determining challenges");
     displayAndHide([nextRoundButton, result], [nextPlayerButton]);
     handleChallengeCheck(getBetTruth());
 
@@ -525,4 +515,3 @@ let game = (initialValues) => {
 };
 cleanBoard();
 eventListeners();
-

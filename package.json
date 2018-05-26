@@ -1,0 +1,23 @@
+{
+  "name": "liars-dice",
+  "version": "1.0.0",
+  "description": "Dice Game",
+  "main": "scripts/bundle.js",
+  "scripts": {
+    "test": "mocha"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cooper-Runstein/Liars-dice.git"
+  },
+  "author": "Cooper Runstein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cooper-Runstein/Liars-dice/issues"
+  },
+  "homepage": "https://github.com/Cooper-Runstein/Liars-dice#readme",
+  "devDependencies": {
+    "browserify": "^16.2.2"
+  }
+}
