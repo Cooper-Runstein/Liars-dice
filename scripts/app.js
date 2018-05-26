@@ -11,6 +11,7 @@ const {displayPlayers} = display;
 const {displayLastBet} = display;
 const {displayRound} = display;
 const {displayChallengeStatus} = display;
+const {setHTML} = display;
 
 
 //###########Document buttons and displays##############
@@ -247,10 +248,10 @@ const setUpNextPlayer = () => {
 };
 
 const setUpHumanTurn = ()=>{
-    test2.innerHTML = "";
+    setHTML(test2,"");
     displayElements([test2]);
-    currentHandDisplay.innerHTML = `<h1 class="text-align"> Your Hand is: </h1>`;
-    currentPlayerDisplay.innerHTML = `<h1 class="text-align">${currentPlayer.name}</h1>`;
+    setHTML(currentHandDisplay, `<h1 class="text-align"> Your Hand is: </h1>`);
+    setHTML(currentPlayerDisplay, `<h1 class="text-align">${currentPlayer.name}</h1>`);
     displayLastBet(lastBet, test);
     displayDiceImages(currentHandDisplay, convertToDiceImages(currentHand));
     displayAndHide([declareDisplay, declareButton, inputs], [spotOnButton, bluffButton, betDisplay, faceDisplay]);

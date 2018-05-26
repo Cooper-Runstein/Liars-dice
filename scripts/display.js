@@ -87,11 +87,15 @@ const displayRound = (result) => {
 
 const displayChallengeStatus = (challenge, display, challenger) =>{
     if (challenge){
-        display.innerHTML = `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`;
+        setHTML(display, `<div class="text-warning display-4">CHALLENGED BY ${challenger.name}</div>`);
     }else{
-        display.innerHTML = `<div class="text-warning display-4">No one challenges</div>`;
+        setHTML(display, `<div class="text-warning display-4">No one challenges</div>`);
     }
 };
+
+const setHTML = (element, html)=>{
+    element.innerHTML = html;
+}
 
 
 
@@ -108,6 +112,7 @@ module.exports = {
     displayLastBet : displayLastBet,
     displayRound : displayRound,
     displayChallengeStatus : displayChallengeStatus,
+    setHTML : setHTML,
 
 };
 
