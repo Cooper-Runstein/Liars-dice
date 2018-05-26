@@ -252,7 +252,7 @@ const setUpHumanTurn = ()=>{
 
 const setUpAiTurn = ()=>{
     displayAndHide([spotOnButton, bluffButton, passButton, result, test], [currentHandDisplay]);
-    setHtml("result", "");
+    setHTML(result, "");
     setHTML(currentPlayerDisplay, `<h1 class="text-align">${currentPlayer.name} is playing</h1>`);
     setHTML(test, `Your hand is:`);
     displayDiceImages(test, convertToDiceImages(table[0].hand));
@@ -303,7 +303,7 @@ const startNextRound = () => {
   table.map(x =>{
     x.roll();
     x.addOccurrences();
-  })
+  });
     returnNewPlayerNumber();
     currentPlayer = table[PlayerNumber];
     displayPlayers(atTable, table);
@@ -312,7 +312,7 @@ const startNextRound = () => {
 
 const endRound = () => {
     resetRoundVariables();
-    setHTML(test, "ROUND OVER")
+    setHTML(test, "ROUND OVER");
     PlayerNumber -= 1;
 };
 

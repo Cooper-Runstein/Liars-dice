@@ -71,12 +71,12 @@ const displayPlayers = (element, table)=>{
     for (let i =0; i<table.length; i++){
         html += `${table[i].name} - Dice Left: ${table[i].hand.length} <br>`
     }
-    element.innerHTML = html;
+    setHTML(element, html);
 };
 
 const displayLastBet = (lastBet, element)=> {
     if (lastBet[0] !== 0) {
-        element.innerHTML = `<h3>Last Bet: ${lastBet[1]} </h3>`;
+        setHTML(element, `<h3>Last Bet: ${lastBet[1]} </h3>`);
         displayDiceImages(element, convertToDiceImages([lastBet[0]]))
     }
 };
@@ -95,7 +95,7 @@ const displayChallengeStatus = (challenge, display, challenger) =>{
 
 const setHTML = (element, html)=>{
     element.innerHTML = html;
-}
+};
 
 
 
