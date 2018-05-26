@@ -13,6 +13,8 @@ const {displayRound} = display;
 const {displayChallengeStatus} = display;
 const {setHTML} = display;
 
+const challenge = require('./challenge.js');
+const {getChallengers} = challenge;
 
 //###########Document buttons and displays##############
 //displays
@@ -84,7 +86,7 @@ const eventListeners = ()=> {
     declareButton.addEventListener('click', () => {
         if(processBetValidity(faceInput.value, countInput.value)) {
             console.log("declarebutton validated");
-            let challengers = getChallengers(faceInput.value, true);
+            let challengers = getChallengers(faceInput.value, true, table);
             if (challengers.length > 0){
                  challenger = getOpponent(challengers);
                  challenged = table[0];
@@ -261,7 +263,7 @@ const setUpAiTurn = ()=>{
 };
 
 const runAiAgainstAi = ()=>{
-    let challengers = getChallengers(lastBet[0], false);
+    let challengers = getChallengers(lastBet[0], false, table);
     console.log(challengers);
     if (challengers.length > 0){
         challenger = getOpponent(challengers);
@@ -329,7 +331,6 @@ const resetRoundVariables = () => {
 const getBetTruth = () => {
     let face = lastBet[0];
     let count = lastBet[1];
-    console.log(diceOnTableIndexedArray);
     return diceOnTableIndexedArray[face - 1] >= count;
 };
 
@@ -340,7 +341,7 @@ const processBetValidity = (face, count) => {
         displayAndHide([faceDisplay], [declareDisplay, declareButton, inputs]);
         return true;
     } else {
-        test2.innerHTML = `<p class="display-5 text-info">Not Valid Input</p>`;
+        setHTML(test2, `<p class="display-5 text-info">Not Valid Input</p>`);
     }
 };
 
@@ -365,26 +366,8 @@ const getBetIfValid = (face, count) => {
     return false;
 };//return if bet is valid
 
-const getChallengers = (face, player)=>{
-    let challengers = [];
-    for (let i=1; i < table.length; i++){
-        if(table[i].returnTrueIfAIChallenges(face, player)){
-            if (table[i] !== currentPlayer){
-            challengers.push(table[i])}
-        }
-    }
-    console.log(`Possible Challengers: ${challengers}`);
-    if (Math.random() > .3){
-    return challengers;
-    }
-
-    return [];
-};
-
 const getOpponent = (challengers)=>{
     let index = Math.floor(Math.random() * Math.floor(challengers.length));
-
-    console.log(challengers[index]);
     return challengers[index]
 };
 
@@ -398,12 +381,12 @@ const handleChallengeCheck = (betBoolean)=>{
     console.log("handle challenge function called");
     if(betBoolean){
         let color = getMessageColor(challenger,challenged);
-        result.innerHTML = `<div class = "${color} display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`;
+        setHTML(result.innerHTML = `<div class = "${color} display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`);
         removeDie(challenger);
         checkIfEliminated(challenger);
 }else{
         let color = getMessageColor(challenged, challenger);
-        result.innerHTML = `<div class = "${color} display-4"> Challenge Succeeded -> ${challenged.name} loses a die </div>`;
+        setHTML(result, `<div class = "${color} display-4"> Challenge Succeeded -> ${challenged.name} loses a die </div>`);
         removeDie(challenged);
         checkIfEliminated(challenged);
     }
@@ -438,7 +421,7 @@ const aiPlays = ()=> {
     let newBet = playerBet();
     betCount = newBet[1];
     displayElements([betDisplay]);
-    betDisplay.innerHTML = `<p class="display-4">${currentPlayer.name} bets there are <br> ${newBet[1]} <span id="dice"> </span>s on the table</p>`;
+    setHTML(betDisplay, `<p class="display-4">${currentPlayer.name} bets there are <br> ${newBet[1]} <span id="dice"> </span>s on the table</p>`);
     let dieDisplay = document.getElementById("dice");
     displayDiceImages(dieDisplay, convertToDiceImages([newBet[0]]));
     return newBet;
@@ -483,16 +466,13 @@ const returnIfLastDie = player => {
 };
 
 const handleLastDieLost = player =>{
-    console.log(`Handling last dice of ${player.name}`);
     let index = table.indexOf(player);
-    console.log(index);
-    console.log(table[index]);
     if (table[index].player === true){
         displayElements([gameOver]);
-        gameOver.innerHTML="YOU LOSE"
+        setHTML(gameOver, "YOU LOSE");
     }else{
         displayElements([test2]);
-        test2.innerHTML = `<h1 class="text-warning">${player.name} has been eliminated</h1>`;
+        setHTML(test2, `<h1 class="text-warning">${player.name} has been eliminated</h1>`);
         table.splice(index, 1);
     }
     console.log(table);
@@ -500,8 +480,7 @@ const handleLastDieLost = player =>{
 
 const checkForWinner = ()=>{
     if (table.length === 1){
-        console.log('########GAME OVER###########');
-        result.innerHTML = "YOU WIN";
+        setHTML(result, "You Win!");
         displayElements([gameOver]);
     }
 };
