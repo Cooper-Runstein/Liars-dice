@@ -378,7 +378,6 @@ const determineChallengeResult = () =>{
 };
 
 const handleChallengeCheck = (betBoolean)=>{
-    console.log("handle challenge function called");
     if(betBoolean){
         let color = getMessageColor(challenger,challenged);
         setHTML(result.innerHTML = `<div class = "${color} display-4"> Challenge Failed -> ${challenger.name} loses a die </div>`);

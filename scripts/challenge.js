@@ -1,4 +1,4 @@
-const getChallengers = (face, player, table)=>{
+const getChallengers = (face, player, table, currentPlayer)=>{
     let challengers = [];
     for (let i=1; i < table.length; i++){
         if(table[i].returnTrueIfAIChallenges(face, player)){
